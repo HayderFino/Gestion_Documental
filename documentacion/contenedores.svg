@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <rect width="800" height="400" fill="#f8fafc" rx="10"/>
+  
+  <!-- Boundary -->
+  <rect x="180" y="50" width="580" height="300" rx="15" fill="none" stroke="#ccc" stroke-dasharray="5,5"/>
+  <text x="190" y="75" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#999">Servidor Apache (CAS)</text>
+
+  <!-- User -->
+  <circle cx="80" cy="200" r="30" fill="#08427b"/>
+  <text x="80" y="250" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Usuario</text>
+
+  <!-- Presentation -->
+  <rect x="220" y="140" width="140" height="120" rx="8" fill="#6da9e4" stroke="#4b86b4" stroke-width="2"/>
+  <text x="290" y="190" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">Interfaz</text>
+  <text x="290" y="210" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle">HTML5 / CSS3 / JS</text>
+
+  <!-- Backend -->
+  <rect x="420" y="140" width="140" height="120" rx="8" fill="#28a745" stroke="#1e7e34" stroke-width="2"/>
+  <text x="490" y="190" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">Lógica MVC</text>
+  <text x="490" y="210" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle">PHP 8.x + Router</text>
+
+  <!-- Storage -->
+  <path d="M640 140 h100 v120 h-100 a15 30 0 0 1 0 -120" fill="#ffc107" stroke="#d39e00" stroke-width="2"/>
+  <text x="690" y="200" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#000" text-anchor="middle">JsonDB</text>
+  <text x="690" y="220" font-family="Arial, sans-serif" font-size="10" fill="#000" text-anchor="middle">Archivos Planos</text>
+
+  <!-- Connectors -->
+  <path d="M110 200 L220 200" stroke="#4b86b4" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M360 200 L420 200" stroke="#1e7e34" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M560 200 L640 200" stroke="#d39e00" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
+    </marker>
+  </defs>
+</svg>

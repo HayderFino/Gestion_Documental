@@ -1,0 +1,612 @@
+<?php
+
+namespace app\controllers;
+
+use app\models\Prestamo;
+use app\models\Expediente;
+use app\models\Usuario;
+use app\config\Database;
+use app\services\AuditService;
+
+class PrestamoController extends Controller {
+    private $prestamoModel;
+    private $expedienteModel;
+    private $auditService;
+
+    public function __construct() {
+        if (!isset($_SESSION['user_id'])) {
+            $this->redirect('/login');
+        }
+        $this->prestamoModel = new Prestamo();
+        $this->expedienteModel = new Expediente();
+        $this->auditService = new AuditService();
+    }
+
+    public function index() {
+        $title = "Gestión de Préstamos";
+        $active = "prestamos";
+        $role = $_SESSION['user_role'];
+        $userName = $_SESSION['user_name'];
+        
+        $db = new \app\helpers\JsonDB('prestamos');
+        $allPrestamos = $db->all();
+
+        // Si es usuario, solo ve sus préstamos
+        if ($role === 'Usuario') {
+            $prestamos = array_filter($allPrestamos, function($p) use ($userName) {
+                return $p['solicitante_nombre'] === $userName;
+            });
+        } else {
+            $prestamos = $allPrestamos;
+        }
+
+        ob_start();
+        ?>
+        <div class="top-actions" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <div class="role-badge">
+                <span class="badge badge-primary">Rol: <?= $role ?></span>
+            </div>
+            <?php if ($role === 'Usuario'): ?>
+            <a href="<?= $_ENV['BASE_URL'] ?>/prestamos/solicitar" class="btn btn-primary">
+                <i class="fas fa-handshake"></i> Solicitar Préstamo
+            </a>
+            <?php endif; ?>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Expediente</th>
+                        <th>Solicitante</th>
+                        <th>Fecha Préstamo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($prestamos)): ?>
+                        <tr><td colspan="6" style="text-align: center;">No hay préstamos registrados.</td></tr>
+                    <?php endif; ?>
+                    <?php foreach ($prestamos as $p): ?>
+                    <tr>
+                        <td>#<?= $p['id'] ?></td>
+                        <td><strong><?= $p['numero_expediente'] ?></strong></td>
+                        <td><?= $p['solicitante_nombre'] ?></td>
+                        <td><?= date('d/m/Y H:i', strtotime($p['fecha_prestamo'] ?? $p['created_at'])) ?></td>
+                        <td>
+                            <?php 
+                                $badgeClass = 'warning';
+                                $estadoLabel = $p['estado'];
+                                if ($p['estado'] == 'devuelto') $badgeClass = 'success';
+                                if ($p['estado'] == 'vencido') $badgeClass = 'danger';
+                                if ($p['estado'] == 'entregado') $badgeClass = 'info';
+                                if ($p['estado'] == 'pendiente_prestamo') { $badgeClass = 'warning'; $estadoLabel = 'Pendiente Préstamo'; }
+                                if ($p['estado'] == 'pendiente_devolucion') { $badgeClass = 'warning'; $estadoLabel = 'Pendiente Devolución'; }
+                            ?>
+                            <span class="badge badge-<?= $badgeClass ?>">
+                                <?= ucfirst(str_replace('_', ' ', $estadoLabel)) ?>
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 5px;">
+                                <?php if ($role === 'Administrador'): ?>
+                                    <?php if ($p['estado'] == 'pendiente_prestamo'): ?>
+                                        <a href="<?= $_ENV['BASE_URL'] ?>/prestamos/ver-solicitud/<?= $p['id'] ?>" class="btn btn-primary" style="padding: 4px 8px; background: var(--accent-color);" title="Verificar Solicitud">
+                                            <i class="fas fa-eye"></i> Verificar
+                                        </a>
+                                    <?php endif; ?>
+
+                                    <?php if ($p['estado'] == 'pendiente_devolucion'): ?>
+                                        <a href="<?= $_ENV['BASE_URL'] ?>/prestamos/devolver/<?= $p['id'] ?>" class="btn btn-primary" style="padding: 4px 8px; background: var(--primary-color);" title="Verificar Entrega">
+                                            <i class="fas fa-file-signature"></i> Verificar Entrega
+                                        </a>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+
+                                <?php if ($role === 'Usuario' && $p['estado'] == 'entregado'): ?>
+                                    <a href="<?= $_ENV['BASE_URL'] ?>/prestamos/entregar/<?= $p['id'] ?>" class="btn btn-primary" style="padding: 4px 8px; background: var(--warning-color);" title="Diligenciar Entrega">
+                                        <i class="fas fa-edit"></i> Diligenciar Entrega
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php
+        $content = ob_get_clean();
+        
+        $this->render('layouts/main', compact('title', 'active', 'content'));
+    }
+
+    public function verSolicitud($id) {
+        if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
+        
+        $title = "Verificar Solicitud de Préstamo";
+        $active = "prestamos";
+        $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        $p = $prestamoDb->find($id);
+
+        if (!$p || $p['estado'] !== 'pendiente_prestamo') $this->redirect('/prestamos');
+
+        ob_start();
+        ?>
+        <div class="table-container" style="max-width: 800px; margin: 0 auto;">
+            <h3 style="margin-bottom: 1.5rem; border-bottom: 2px solid #eee; padding-bottom: 1rem;">Detalles de la Solicitud</h3>
+            
+            <div class="detail-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                <div><strong>Expediente:</strong> <?= $p['numero_expediente'] ?></div>
+                <div><strong>Solicitante:</strong> <?= $p['solicitante_nombre'] ?></div>
+                <div><strong>Fecha Solicitud:</strong> <?= $p['fecha_solicitud'] ?></div>
+                <div><strong>Vínculo:</strong> <?= $p['tipo_vinculacion'] ?></div>
+                <div><strong>Línea:</strong> <?= $p['linea_expediente'] ?></div>
+                <div><strong>Motivo:</strong> <?= $p['motivo_consulta'] ?></div>
+                <div style="grid-column: span 2;"><strong>Observaciones:</strong><br><?= nl2br($p['observaciones'] ?? 'Ninguna') ?></div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <a href="<?= $_ENV['BASE_URL'] ?>/prestamos" class="btn btn-secondary">Regresar</a>
+                <a href="<?= $_ENV['BASE_URL'] ?>/prestamos/aprobar/<?= $id ?>" class="btn btn-primary" style="background: var(--success-color);">
+                    <i class="fas fa-check-circle"></i> Aprobar y Entregar Expediente
+                </a>
+            </div>
+        </div>
+        <?php
+        $content = ob_get_clean();
+        $this->render('layouts/main', compact('title', 'active', 'content'));
+    }
+
+    public function create() {
+        if ($_SESSION['user_role'] !== 'Usuario') {
+            $this->redirect('/prestamos');
+        }
+        $title = "Registrar Préstamo";
+        $active = "prestamos";
+        
+        $expedienteDb = new \app\helpers\JsonDB('expedientes');
+        $expedientes = $expedienteDb->where('estado', 'disponible');
+        
+        $lineas = ['Recurso Hídrico', 'Minería y Ecosistemas', 'Residuos e Infraestructura', 'Forestal', 'Fauna', 'No sabe'];
+        $vinculaciones = ['Funcionario', 'Contratista'];
+        $motivos = [
+            'Respuesta Correspondencia', 'Atención Queja', 'Concepto Liquidación', 
+            'Auto Liquidación', 'Auto Visita', 'Concepto técnico Visita', 
+            'Resolución Seguimiento', 'Resolución Proceso Sancionatorio', 
+            'Auto Proceso Sancionatorio', 'Atención a Usuario', 
+            'Tramites Urgentes: Tutela, DP otros', 'Otro/Cual'
+        ];
+
+        ob_start();
+        ?>
+        <div class="table-container" style="max-width: 900px; margin: 0 auto;">
+            <form action="<?= $_ENV['BASE_URL'] ?>/prestamos/guardar" method="POST">
+                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    
+                    <div class="form-group">
+                        <label>1. Fecha Solicitud *</label>
+                        <input type="date" name="fecha_solicitud" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>2. Nombre Completo Solicitante *</label>
+                        <input type="text" class="form-control" value="<?= $_SESSION['user_name'] ?>" readonly>
+                        <input type="hidden" name="usuario_solicitante_id" value="<?= $_SESSION['user_id'] ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label>3. Tipo de Vinculación *</label>
+                        <select name="tipo_vinculacion" class="form-control" required>
+                            <option value="">-- Seleccione vinculación --</option>
+                            <?php foreach ($vinculaciones as $v): ?>
+                                <option value="<?= $v ?>"><?= $v ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>4. Nº Expediente *</label>
+                        <select name="expediente_id" class="form-control" required>
+                            <option value="">-- Seleccione el expediente --</option>
+                            <?php foreach ($expedientes as $exp): ?>
+                                <option value="<?= $exp['id'] ?>"><?= $exp['numero_expediente'] ?> - <?= $exp['titulo'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>5. Línea del Expediente *</label>
+                        <select name="linea_expediente" class="form-control" required>
+                            <option value="">-- Seleccione la línea --</option>
+                            <?php foreach ($lineas as $l): ?>
+                                <option value="<?= $l ?>"><?= $l ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>6. Motivo de Consulta *</label>
+                        <select name="motivo_consulta" class="form-control" required id="motivo_select">
+                            <option value="">-- Seleccione el motivo --</option>
+                            <?php foreach ($motivos as $m): ?>
+                                <option value="<?= $m ?>"><?= $m ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Observaciones / Detalle (Opcional)</label>
+                        <textarea name="observaciones" class="form-control" rows="3" placeholder="Si seleccionó 'Otro', especifique aquí..."></textarea>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                    <a href="<?= $_ENV['BASE_URL'] ?>/prestamos" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Registrar Solicitud de Préstamo</button>
+                </div>
+            </form>
+        </div>
+        <?php
+        $content = ob_get_clean();
+        
+        $this->render('layouts/main', compact('title', 'active', 'content'));
+    }
+
+    public function store() {
+        $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        $expedienteDb = new \app\helpers\JsonDB('expedientes');
+        $auditDb = new \app\helpers\JsonDB('auditoria');
+
+        $expedienteId = $_POST['expediente_id'];
+        $expediente = $expedienteDb->find($expedienteId);
+
+        $data = [
+            'expediente_id' => $expedienteId,
+            'numero_expediente' => $expediente['numero_expediente'],
+            'solicitante_nombre' => $_SESSION['user_name'],
+            'usuario_solicitante_id' => $_SESSION['user_id'],
+            'fecha_solicitud' => $_POST['fecha_solicitud'],
+            'tipo_vinculacion' => $_POST['tipo_vinculacion'],
+            'linea_expediente' => $_POST['linea_expediente'],
+            'motivo_consulta' => $_POST['motivo_consulta'],
+            'observaciones' => $_POST['observaciones'],
+            'estado' => 'pendiente_prestamo'
+        ];
+
+        $id = $prestamoDb->create($data);
+        
+        // Registrar en auditoría
+        $auditDb->create([
+            'usuario' => $_SESSION['user_name'],
+            'accion' => 'REQUEST_PRESTAMO',
+            'tabla' => 'prestamos',
+            'registro_id' => $id,
+            'fecha' => date('Y-m-d H:i:s'),
+            'ip' => $_SERVER['REMOTE_ADDR']
+        ]);
+        
+        $this->redirect('/prestamos');
+    }
+
+    public function aprobarPrestamo($id) {
+        if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
+
+        $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        $expedienteDb = new \app\helpers\JsonDB('expedientes');
+        $auditDb = new \app\helpers\JsonDB('auditoria');
+
+        $p = $prestamoDb->find($id);
+        if ($p && $p['estado'] == 'pendiente_prestamo') {
+            $prestamoDb->update($id, [
+                'estado' => 'entregado',
+                'fecha_prestamo' => date('Y-m-d H:i:s'),
+                'admin_aprueba' => $_SESSION['user_name']
+            ]);
+
+            $expedienteDb->update($p['expediente_id'], ['estado' => 'prestado']);
+
+            $auditDb->create([
+                'usuario' => $_SESSION['user_name'],
+                'accion' => 'APPROVE_PRESTAMO',
+                'tabla' => 'prestamos',
+                'registro_id' => $id,
+                'fecha' => date('Y-m-d H:i:s'),
+                'ip' => $_SERVER['REMOTE_ADDR']
+            ]);
+        }
+
+        $this->redirect('/prestamos');
+    }
+
+    public function entregar($id) {
+        if ($_SESSION['user_role'] !== 'Usuario') $this->redirect('/prestamos');
+
+        $title = "Diligenciar Entrega de Expediente";
+        $active = "prestamos";
+        $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        $p = $prestamoDb->find($id);
+
+        if (!$p || $p['estado'] !== 'entregado' || ($p['usuario_solicitante_id'] ?? null) != $_SESSION['user_id']) {
+            $this->redirect('/prestamos');
+        }
+
+        $tramites = [
+            'Concepto Técnico Queja', 'Concepto Liquidación', 'Auto Liquidación',
+            'Auto Visita', 'Concepto técnico Visita', 'Resolución Seguimiento',
+            'Resolución Proceso Sancionatorio', 'Auto Proceso Sancionatorio',
+            'Oficio a Usuario', 'Memorando', 'Informe de Visita', 'Otra/Cual'
+        ];
+
+        ob_start();
+        ?>
+        <div class="table-container" style="max-width: 900px; margin: 0 auto;">
+            <div style="margin-bottom: 2rem; border-bottom: 2px solid #eee; padding-bottom: 1rem;">
+                <h3 style="color: var(--primary-dark);">Diligenciar Información de Entrega</h3>
+                <p>Expediente: <strong><?= $p['numero_expediente'] ?></strong></p>
+            </div>
+            
+            <form action="<?= $_ENV['BASE_URL'] ?>/prestamos/procesar-entrega/<?= $id ?>" method="POST">
+                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    
+                    <div class="form-group">
+                        <label>1. Fecha Devolución *</label>
+                        <input type="date" name="fecha_devolucion" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>2. Trámite Realizado *</label>
+                        <select name="tramite_realizado" class="form-control" required>
+                            <option value="">-- Seleccione el trámite --</option>
+                            <?php foreach ($tramites as $t): ?>
+                                <option value="<?= $t ?>"><?= $t ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>3. Nº Oficio, Memorando o Actos Administrativos adicionados *</label>
+                        <input type="text" name="numero_acto" class="form-control" placeholder="Ej: Res. 2024-123 / Oficio 456" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>4. Tomos Entregados *</label>
+                        <input type="number" name="tomos_entregados" class="form-control" min="1" value="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>5. Nº de folios finales *</label>
+                        <input type="number" name="folios_recibidos" class="form-control" min="1" required placeholder="Total folios">
+                    </div>
+
+                    <div class="form-group">
+                        <label>6. Folios Anexos *</label>
+                        <input type="number" name="folios_anexos" class="form-control" min="0" value="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>7. Estado Físico *</label>
+                        <select name="estado_fisico" class="form-control" required>
+                            <option value="bueno">Bueno</option>
+                            <option value="regular">Regular</option>
+                            <option value="malo">Malo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>8. Observaciones de Entrega</label>
+                        <textarea name="observaciones_devolucion" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                    <a href="<?= $_ENV['BASE_URL'] ?>/prestamos" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary" style="background: var(--warning-color);">Enviar a Archivo para Verificación</button>
+                </div>
+            </form>
+        </div>
+        <?php
+        $content = ob_get_clean();
+        $this->render('layouts/main', compact('title', 'active', 'content'));
+    }
+
+    public function procesarEntrega($id) {
+        if ($_SESSION['user_role'] !== 'Usuario') $this->redirect('/prestamos');
+
+        $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        $p = $prestamoDb->find($id);
+
+        if (!$p || $p['estado'] !== 'entregado' || ($p['usuario_solicitante_id'] ?? null) != $_SESSION['user_id']) {
+            $this->redirect('/prestamos');
+        }
+
+        $data = [
+            'estado' => 'pendiente_devolucion',
+            'datos_entrega' => [
+                'fecha_devolucion' => $_POST['fecha_devolucion'],
+                'tramite_realizado' => $_POST['tramite_realizado'],
+                'numero_acto' => $_POST['numero_acto'],
+                'tomos_entregados' => $_POST['tomos_entregados'],
+                'folios_recibidos' => $_POST['folios_recibidos'],
+                'folios_anexos' => $_POST['folios_anexos'],
+                'estado_fisico' => $_POST['estado_fisico'],
+                'observaciones_devolucion' => $_POST['observaciones_devolucion']
+            ]
+        ];
+
+        $prestamoDb->update($id, $data);
+        $this->redirect('/prestamos');
+    }
+
+    public function devolver($id) {
+        if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
+
+        $title = "Verificar Entrega de Expediente";
+        $active = "prestamos";
+        
+        $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        $p = $prestamoDb->find($id);
+
+        if (!$p || $p['estado'] != 'pendiente_devolucion') $this->redirect('/prestamos');
+
+        $d = $p['datos_entrega'] ?? [];
+
+        ob_start();
+        ?>
+        <div class="table-container" style="max-width: 800px; margin: 0 auto;">
+            <div style="margin-bottom: 2rem; border-bottom: 2px solid #eee; padding-bottom: 1rem;">
+                <h3 style="color: var(--primary-dark);">Verificación de Recepción Técnica</h3>
+                <p>Expediente: <strong><?= $p['numero_expediente'] ?></strong> | Devuelto por: <strong><?= $p['solicitante_nombre'] ?></strong></p>
+            </div>
+            
+            <?php if (empty($d)): ?>
+                <div class="alert alert-warning" style="background: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #ffeeba;">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>Nota:</strong> Este es un registro antiguo o no contiene datos de entrega diligenciados por el usuario. Por favor verifique físicamente.
+                </div>
+            <?php endif; ?>
+
+            <div class="detail-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; background: #f9f9f9; padding: 1.5rem; border-radius: 8px;">
+                <div><strong>Fecha Devolución:</strong> <?= $d['fecha_devolucion'] ?? date('Y-m-d') ?></div>
+                <div><strong>Trámite Realizado:</strong> <?= $d['tramite_realizado'] ?? 'No especificado' ?></div>
+                <div><strong>Actos/Memorandos:</strong> <?= $d['numero_acto'] ?? 'N/A' ?></div>
+                <div><strong>Tomos:</strong> <?= $d['tomos_entregados'] ?? 1 ?></div>
+                <div><strong>Folios Totales:</strong> <?= $d['folios_recibidos'] ?? 0 ?></div>
+                <div><strong>Folios Anexos:</strong> <?= $d['folios_anexos'] ?? 0 ?></div>
+                <div><strong>Estado Físico:</strong> <span class="badge badge-info"><?= strtoupper($d['estado_fisico'] ?? 'BUENO') ?></span></div>
+                <div style="grid-column: span 2;"><strong>Observaciones del Usuario:</strong><br><?= nl2br($d['observaciones_devolucion'] ?? 'Sin observaciones') ?></div>
+            </div>
+
+            <form id="form-verificacion" action="<?= $_ENV['BASE_URL'] ?>/prestamos/procesar-devolucion/<?= $id ?>" method="POST">
+                <!-- Campos ocultos para mantener los datos verificados -->
+                <input type="hidden" name="fecha_devolucion" value="<?= $d['fecha_devolucion'] ?? date('Y-m-d') ?>">
+                <input type="hidden" name="tramite_realizado" value="<?= $d['tramite_realizado'] ?? 'No especificado' ?>">
+                <input type="hidden" name="numero_acto" value="<?= $d['numero_acto'] ?? 'N/A' ?>">
+                <input type="hidden" name="tomos_entregados" value="<?= $d['tomos_entregados'] ?? 1 ?>">
+                <input type="hidden" name="folios_recibidos" value="<?= $d['folios_recibidos'] ?? 0 ?>">
+                <input type="hidden" name="folios_anexos" value="<?= $d['folios_anexos'] ?? 0 ?>">
+                <input type="hidden" name="estado_fisico" value="<?= $d['estado_fisico'] ?? 'bueno' ?>">
+                <input type="hidden" name="observaciones_devolucion" value="<?= $d['observaciones_devolucion'] ?? '' ?>">
+
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 0.5rem;">Observaciones de Verificación (Opcional si confirma, Obligatorio si rechaza):</label>
+                    <textarea name="observaciones_admin" id="observaciones_admin" rows="3" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd;" placeholder="Escriba aquí por qué no recibe el expediente o cualquier observación técnica..."></textarea>
+                </div>
+
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end; align-items: center;">
+                    <a href="<?= $_ENV['BASE_URL'] ?>/prestamos" class="btn btn-secondary">Solo Salir</a>
+                    
+                    <button type="button" onclick="rechazarDevolucion()" class="btn btn-primary" style="background: var(--danger-color);">
+                        <i class="fas fa-times-circle"></i> Rechazar Recepción
+                    </button>
+
+                    <button type="submit" class="btn btn-primary" style="background: var(--success-color);">
+                        <i class="fas fa-check-double"></i> Confirmar Recepción y Cerrar Préstamo
+                    </button>
+                </div>
+            </form>
+
+            <script>
+            function rechazarDevolucion() {
+                const obs = document.getElementById('observaciones_admin').value.trim();
+                if (!obs) {
+                    alert('Por favor escriba el motivo del rechazo en el campo de observaciones.');
+                    document.getElementById('observaciones_admin').focus();
+                    return;
+                }
+                
+                if (confirm('¿Está seguro de que desea RECHAZAR esta entrega? El préstamo volverá a estado "Entregado".')) {
+                    const form = document.getElementById('form-verificacion');
+                    form.action = "<?= $_ENV['BASE_URL'] ?>/prestamos/rechazar-devolucion/<?= $id ?>";
+                    form.submit();
+                }
+            }
+            </script>
+        </div>
+        <?php
+        $content = ob_get_clean();
+        $this->render('layouts/main', compact('title', 'active', 'content'));
+    }
+
+    public function procesarDevolucion($id) {
+        if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
+
+        $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        $expedienteDb = new \app\helpers\JsonDB('expedientes');
+        $devolucionDb = new \app\helpers\JsonDB('devoluciones');
+        $auditDb = new \app\helpers\JsonDB('auditoria');
+
+        $p = $prestamoDb->find($id);
+        if (!$p) $this->redirect('/prestamos');
+
+        $devolucionData = [
+            'prestamo_id' => $id,
+            'numero_expediente' => $p['numero_expediente'],
+            'fecha_devolucion' => $_POST['fecha_devolucion'],
+            'nombre_devuelve' => $p['solicitante_nombre'],
+            'tipo_vinculacion' => $p['tipo_vinculacion'],
+            'tramite_realizado' => $_POST['tramite_realizado'],
+            'numero_acto' => $_POST['numero_acto'],
+            'tomos_entregados' => $_POST['tomos_entregados'],
+            'folios_recibidos' => $_POST['folios_recibidos'],
+            'folios_anexos' => $_POST['folios_anexos'],
+            'estado_fisico' => $_POST['estado_fisico'],
+            'usuario_recibe_archivo' => $_SESSION['user_name'],
+            'observaciones' => $_POST['observaciones_devolucion']
+        ];
+        $devolucionDb->create($devolucionData);
+
+        $prestamoDb->update($id, ['estado' => 'devuelto']);
+
+        $expedienteDb->update($p['expediente_id'], [
+            'estado' => 'disponible',
+            'numero_tomos' => $_POST['tomos_entregados'],
+            'foliacion_total' => $_POST['folios_recibidos']
+        ]);
+
+        $auditDb->create([
+            'usuario' => $_SESSION['user_name'],
+            'accion' => 'RETURN_EXPEDIENTE',
+            'tabla' => 'devoluciones',
+            'registro_id' => $id,
+            'fecha' => date('Y-m-d H:i:s'),
+            'ip' => $_SERVER['REMOTE_ADDR']
+        ]);
+
+        $this->redirect('/prestamos');
+    }
+
+    public function rechazarDevolucion($id) {
+        if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
+
+        $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        $expDb = new \app\helpers\JsonDB('expedientes');
+        $auditoriaDb = new \app\helpers\JsonDB('auditoria');
+
+        $p = $prestamoDb->find($id);
+        if (!$p) $this->redirect('/prestamos');
+
+        $motivoRechazo = $_POST['observaciones_admin'] ?? 'Sin motivo especificado';
+
+        // Revertir estado del préstamo
+        $p['estado'] = 'entregado';
+        $p['rechazo_last_reason'] = $motivoRechazo;
+        $p['rechazo_at'] = date('Y-m-d H:i:s');
+        
+        // No borramos datos_entrega para que el usuario pueda ver qué envió, 
+        // pero el estado "entregado" le permitirá volver a diligenciarlos.
+        
+        $prestamoDb->update($id, $p);
+
+        // Auditoría
+        $auditoriaDb->create([
+            'fecha' => date('Y-m-d H:i:s'),
+            'usuario' => $_SESSION['user_name'],
+            'accion' => 'RECHAZO_DEVOLUCION',
+            'detalles' => "Rechazada entrega de EXP: {$p['numero_expediente']}. Motivo: $motivoRechazo"
+        ]);
+
+        $this->redirect('/prestamos');
+    }
+}

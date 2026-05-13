@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+  <!-- Background -->
+  <rect width="600" height="300" fill="#f8fafc" rx="10"/>
+  
+  <!-- System Node -->
+  <rect x="225" y="100" width="150" height="100" rx="8" fill="#1168bd" stroke="#0b4884" stroke-width="2"/>
+  <text x="300" y="145" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">Sistema SGD</text>
+  <text x="300" y="165" font-family="Arial, sans-serif" font-size="12" fill="white" text-anchor="middle">Gestión Documental</text>
+  
+  <!-- Admin Node -->
+  <circle cx="100" cy="150" r="40" fill="#08427b" stroke="#052e56" stroke-width="2"/>
+  <text x="100" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Administrador</text>
+  <text x="100" y="225" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">(Verificación/Control)</text>
+  
+  <!-- User Node -->
+  <circle cx="500" cy="150" r="40" fill="#08427b" stroke="#052e56" stroke-width="2"/>
+  <text x="500" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Usuario</text>
+  <text x="500" y="225" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">(Solicitud/Reporte)</text>
+  
+  <!-- Lines -->
+  <path d="M140 150 L225 150" stroke="#0b4884" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M460 150 L375 150" stroke="#0b4884" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <text x="182" y="140" font-family="Arial, sans-serif" font-size="10" fill="#08427b" text-anchor="middle">Verifica</text>
+  <text x="418" y="140" font-family="Arial, sans-serif" font-size="10" fill="#08427b" text-anchor="middle">Solicita</text>
+  
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0b4884" />
+    </marker>
+  </defs>
+</svg>

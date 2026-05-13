@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Arquitectura - SGD</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #08427b;
+            --secondary: #1168bd;
+            --accent: #28a745;
+            --bg: #f4f7f9;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #333; padding: 40px; line-height: 1.6; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; padding: 50px; border-radius: 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.08); }
+        h1 { color: var(--primary); border-bottom: 3px solid var(--bg); padding-bottom: 15px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        h2 { margin-top: 50px; color: var(--secondary); font-weight: 600; }
+        .diagram-card { background: #fff; border: 1px solid #edf2f7; border-radius: 12px; padding: 30px; margin-top: 25px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); overflow-x: auto; }
+        .description { color: #718096; margin-bottom: 15px; font-size: 0.95rem; }
+        .badge { background: var(--bg); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏛️ Arquitectura del Sistema SGD <span class="badge">v2.0 - Workflow CAS</span></h1>
+        <p>Este visualizador renderiza dinámicamente los diagramas técnicos y flujos operativos del sistema.</p>
+
+        <!-- Diagrama 1 -->
+        <h2>1. Mapa de Contexto (Nivel 1)</h2>
+        <p class="description">Interacción entre el personal de la CAS y el sistema con segregación de funciones.</p>
+        <div class="diagram-card">
+            <div class="mermaid">
+            graph TB
+                classDef person fill:#08427b,stroke:#052e56,color:#fff,stroke-width:2px;
+                classDef system fill:#1168bd,stroke:#0b4884,color:#fff,stroke-width:2px;
+                
+                subgraph Ecosistema_CAS [Ecosistema Institucional]
+                    SGD[("<b>Sistema SGD</b><br/>Gestión Documental")]:::system
+                end
+
+                Admin((<b>Administrador</b><br/>Control/Verificación)):::person
+                User((<b>Usuario</b><br/>Funcionario/Solicitante)):::person
+                
+                Admin -- "Verifica y aprueba" --> SGD
+                User -- "Solicita y reporta entrega" --> SGD
+            </div>
+        </div>
+
+        <!-- Diagrama 2 -->
+        <h2>2. Diagrama de Contenedores (Nivel 2)</h2>
+        <p class="description">Tecnologías y flujo de datos interno con persistencia JsonDB.</p>
+        <div class="diagram-card">
+            <div class="mermaid">
+            graph LR
+                classDef browser fill:#6da9e4,stroke:#4b86b4,color:#fff;
+                classDef logic fill:#28a745,stroke:#1e7e34,color:#fff;
+                classDef storage fill:#ffc107,stroke:#d39e00,color:#000;
+
+                User((<b>Usuario</b>))
+                
+                subgraph Servidor_Apache [Servidor Web Apache]
+                    Frontend["<b>Interfaz Premium</b><br/>(Glassmorphism)"]:::browser
+                    Backend["<b>Controlador MVC</b><br/>(PHP + Router)"]:::logic
+                    
+                    subgraph Persistencia [Motor de Datos]
+                        JSON[("<b>JsonDB</b><br/>(Archivos Planos)")]:::storage
+                    end
+                end
+
+                User -- "Interactúa" --> Frontend
+                Frontend -- "HTTP" --> Backend
+                Backend -- "Gestiona" --> JSON
+            </div>
+        </div>
+
+        <!-- Diagrama 3 -->
+        <h2>3. Diagrama Entidad-Relación (Lógico)</h2>
+        <p class="description">Estructura de datos integrada en el motor de persistencia.</p>
+        <div class="diagram-card">
+            <div class="mermaid">
+            erDiagram
+                USUARIO ||--o{ PRESTAMO : solicita
+                EXPEDIENTE ||--o{ PRESTAMO : se_presta
+                PRESTAMO {
+                    string estado
+                    json datos_entrega
+                }
+                
+                USUARIO { 
+                    string nombre
+                    string rol
+                }
+                EXPEDIENTE { 
+                    string numero
+                    string ubicacion
+                }
+            </div>
+        </div>
+
+        <!-- Diagrama 4 - NUEVO FLOWCHART -->
+        <h2>4. Workflow de Doble Verificación</h2>
+        <p class="description">Flujo lógico de transiciones de estado para garantizar la integridad documental.</p>
+        <div class="diagram-card">
+            <div class="mermaid">
+            graph TD
+                A[Inicio: Usuario solicita] --> B{Admin verifica?}
+                B -- No --> A
+                B -- Si --> C[Estado: Entregado]
+                C --> D[Usuario Diligencia Entrega]
+                D --> E[Estado: Pendiente Devolución]
+                E --> F{Admin verifica retorno?}
+                F -- No --> D
+                F -- Si --> G[Estado: Disponible]
+                G --> H[Fin: Expediente Liberado]
+
+                style C fill:#d1e7dd,stroke:#0f5132
+                style E fill:#fff3cd,stroke:#856404
+                style G fill:#cfe2ff,stroke:#08427b
+            </div>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'neutral',
+            securityLevel: 'loose',
+            fontFamily: 'Inter'
+        });
+    </script>
+</body>
+</html>

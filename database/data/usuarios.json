@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "usuario": "admin",
+        "password": "admin123",
+        "nombre_completo": "Administrador Sistema",
+        "email": "admin@cas.gov.co",
+        "rol_nombre": "Administrador",
+        "estado": "activo"
+    },
+    {
+        "id": 2,
+        "usuario": "jpererz",
+        "password": "123",
+        "nombre_completo": "Juan Pérez",
+        "email": "jperez@cas.gov.co",
+        "rol_nombre": "Usuario",
+        "estado": "activo"
+    }
+]

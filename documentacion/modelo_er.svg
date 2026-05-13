@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <rect width="800" height="500" fill="#f8fafc" rx="10"/>
+  
+  <!-- Entities -->
+  <!-- USUARIO -->
+  <rect x="50" y="50" width="180" height="120" rx="5" fill="white" stroke="#08427b" stroke-width="2"/>
+  <rect x="50" y="50" width="180" height="30" rx="5" fill="#08427b"/>
+  <text x="140" y="70" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">USUARIO</text>
+  <text x="60" y="100" font-family="Arial, sans-serif" font-size="12" fill="#333">id (PK)</text>
+  <text x="60" y="120" font-family="Arial, sans-serif" font-size="12" fill="#333">nombre_completo</text>
+  <text x="60" y="140" font-family="Arial, sans-serif" font-size="12" fill="#333">rol (Admin/User)</text>
+
+  <!-- EXPEDIENTE -->
+  <rect x="550" y="50" width="180" height="120" rx="5" fill="white" stroke="#08427b" stroke-width="2"/>
+  <rect x="550" y="50" width="180" height="30" rx="5" fill="#08427b"/>
+  <text x="640" y="70" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">EXPEDIENTE</text>
+  <text x="560" y="100" font-family="Arial, sans-serif" font-size="12" fill="#333">id (PK)</text>
+  <text x="560" y="120" font-family="Arial, sans-serif" font-size="12" fill="#333">numero_expediente</text>
+  <text x="560" y="140" font-family="Arial, sans-serif" font-size="12" fill="#333">estado (Disp/Prest)</text>
+
+  <!-- PRESTAMO -->
+  <rect x="300" y="250" width="200" height="180" rx="5" fill="white" stroke="#08427b" stroke-width="2"/>
+  <rect x="300" y="250" width="200" height="30" rx="5" fill="#08427b"/>
+  <text x="400" y="270" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">PRESTAMO</text>
+  <text x="310" y="300" font-family="Arial, sans-serif" font-size="12" fill="#333">id (PK)</text>
+  <text x="310" y="320" font-family="Arial, sans-serif" font-size="12" fill="#333">usuario_id (FK)</text>
+  <text x="310" y="340" font-family="Arial, sans-serif" font-size="12" fill="#333">expediente_id (FK)</text>
+  <text x="310" y="360" font-family="Arial, sans-serif" font-size="12" fill="#333">estado</text>
+  <text x="310" y="380" font-family="Arial, sans-serif" font-size="12" fill="#d63384">datos_entrega (JSON)</text>
+  <text x="310" y="400" font-family="Arial, sans-serif" font-size="12" fill="#666">...folios, tomos, actos</text>
+
+  <!-- Relationships -->
+  <path d="M140 170 L140 340 L300 340" fill="none" stroke="#666" stroke-width="1.5" stroke-dasharray="4"/>
+  <path d="M640 170 L640 340 L500 340" fill="none" stroke="#666" stroke-width="1.5" stroke-dasharray="4"/>
+  
+  <text x="180" y="330" font-family="Arial, sans-serif" font-size="10" fill="#666">1:N</text>
+  <text x="600" y="330" font-family="Arial, sans-serif" font-size="10" fill="#666">1:N</text>
+</svg>
