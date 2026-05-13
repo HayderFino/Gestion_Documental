@@ -127,12 +127,14 @@ class DashboardController extends Controller {
                             <tr>
                                 <th>Expediente</th>
                                 <th>Poseedor</th>
-                                <th>Desde</th>
+                                <th>Estado Actual</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php 
-                            $activos = $preDb->where('estado', 'entregado');
+                            $activos = array_filter($allPrestamos, function($p) {
+                                return $p['estado'] === 'entregado' || $p['estado'] === 'pendiente_devolucion';
+                            });
                             if (empty($activos)): ?>
                                 <tr><td colspan="3" style="text-align: center;">Todos están en archivo.</td></tr>
                             <?php endif;
@@ -140,7 +142,13 @@ class DashboardController extends Controller {
                             <tr>
                                 <td><strong><?= $p['numero_expediente'] ?></strong></td>
                                 <td><?= $p['solicitante_nombre'] ?></td>
-                                <td><?= date('d/m/Y', strtotime($p['fecha_prestamo'])) ?></td>
+                                <td>
+                                    <?php if ($p['estado'] === 'entregado'): ?>
+                                        <span class="badge badge-info">En poder del usuario</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-warning">En proceso de entrega</span>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>

@@ -212,7 +212,9 @@ class PrestamoController extends Controller {
                         <select name="expediente_id" class="form-control" required>
                             <option value="">-- Seleccione el expediente --</option>
                             <?php foreach ($expedientes as $exp): ?>
-                                <option value="<?= $exp['id'] ?>"><?= $exp['numero_expediente'] ?> - <?= $exp['titulo'] ?></option>
+                                <option value="<?= $exp['id'] ?>">
+                                    <?= ($exp['numero_expediente'] ?? $exp['no_orden'] ?? 'S/N') ?> - <?= $exp['titulo'] ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -306,7 +308,10 @@ class PrestamoController extends Controller {
                 'admin_aprueba' => $_SESSION['user_name']
             ]);
 
-            $expedienteDb->update($p['expediente_id'], ['estado' => 'prestado']);
+            $expedienteDb->update($p['expediente_id'], [
+                'estado' => 'prestado',
+                'detalle_estado' => strtoupper($p['solicitante_nombre']) . ' (' . date('d/m/Y') . ')'
+            ]);
 
             $auditDb->create([
                 'usuario' => $_SESSION['user_name'],
@@ -561,8 +566,8 @@ class PrestamoController extends Controller {
 
         $expedienteDb->update($p['expediente_id'], [
             'estado' => 'disponible',
-            'numero_tomos' => $_POST['tomos_entregados'],
-            'foliacion_total' => $_POST['folios_recibidos']
+            'tomos' => $_POST['tomos_entregados'],
+            'folios' => $_POST['folios_recibidos']
         ]);
 
         $auditDb->create([

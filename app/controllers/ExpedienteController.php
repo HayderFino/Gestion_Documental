@@ -5,11 +5,13 @@ namespace app\controllers;
 use app\models\Expediente;
 use app\services\AuditService;
 
-class ExpedienteController extends Controller {
+class ExpedienteController extends Controller
+{
     private $expedienteModel;
     private $auditService;
 
-    public function __construct() {
+    public function __construct()
+    {
         if (!isset($_SESSION['user_id'])) {
             $this->redirect('/login');
         }
@@ -17,16 +19,18 @@ class ExpedienteController extends Controller {
         $this->auditService = new AuditService();
     }
 
-    private function checkAdmin() {
+    private function checkAdmin()
+    {
         if ($_SESSION['user_role'] !== 'Administrador') {
             $this->redirect('/expedientes');
         }
     }
 
-    public function index() {
+    public function index()
+    {
         $title = "Gestión de Expedientes";
         $active = "expedientes";
-        
+
         $db = new \app\helpers\JsonDB('expedientes');
         $expedientes = $db->all();
 
@@ -37,9 +41,9 @@ class ExpedienteController extends Controller {
                 <input type="text" placeholder="Buscar expediente..." class="form-control" style="width: 300px;">
             </div>
             <?php if ($_SESSION['user_role'] === 'Administrador'): ?>
-            <a href="<?= $_ENV['BASE_URL'] ?>/expedientes/crear" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Nuevo Expediente
-            </a>
+                <a href="<?= $_ENV['BASE_URL'] ?>/expedientes/crear" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Nuevo Expediente
+                </a>
             <?php endif; ?>
         </div>
 
@@ -47,60 +51,63 @@ class ExpedienteController extends Controller {
             <table>
                 <thead>
                     <tr>
-                        <th>N° Expediente</th>
-                        <th>Título</th>
+                        <th>Expediente</th>
+                        <th>Asunto / Serie</th>
                         <th>Ubicación</th>
-                        <th>Trámite</th>
+                        <th>Código</th>
                         <th>Estado</th>
-                        <th>Tomos</th>
+                        <th>N° Orden</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($expedientes as $exp): ?>
-                    <tr>
-                        <td><strong><?= $exp['numero_expediente'] ?></strong></td>
-                        <td><?= $exp['titulo'] ?></td>
-                        <td><code><?= $exp['ubicacion_fisica'] ?? 'N/A' ?></code></td>
-                        <td><?= $exp['tramite_nombre'] ?? 'N/A' ?></td>
-                        <td>
-                            <span class="badge badge-<?= ($exp['estado'] == 'disponible') ? 'success' : 'warning' ?>">
-                                <?= ucfirst($exp['estado']) ?>
-                            </span>
-                        </td>
-                        <td><?= $exp['numero_tomos'] ?></td>
-                        <td>
-                            <?php if ($_SESSION['user_role'] === 'Administrador'): ?>
-                            <a href="<?= $_ENV['BASE_URL'] ?>/expedientes/editar/<?= $exp['id'] ?>" class="btn btn-primary" style="padding: 4px 8px;">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <?php else: ?>
-                            <button class="btn btn-secondary" style="padding: 4px 8px;" disabled title="Solo lectura">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td><strong><?= $exp['numero_expediente'] ?? 'N/A' ?></strong></td>
+                            <td><?= $exp['titulo'] ?></td>
+                            <td><code><?= $exp['ubicacion_fisica'] ?? 'N/A' ?></code></td>
+                            <td><?= $exp['codigo'] ?? 'N/A' ?></td>
+                            <td>
+                                <span
+                                    class="badge badge-<?= (stripos($exp['estado'] ?? '', 'Prestado') === false) ? 'success' : 'warning' ?>">
+                                    <?= $exp['estado'] ?? 'Disponible' ?>
+                                </span>
+                            </td>
+                            <td><?= $exp['no_orden'] ?? 0 ?></td>
+                            <td>
+                                <?php if ($_SESSION['user_role'] === 'Administrador'): ?>
+                                    <a href="<?= $_ENV['BASE_URL'] ?>/expedientes/editar/<?= $exp['id'] ?>" class="btn btn-primary"
+                                        style="padding: 4px 8px;">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                <?php else: ?>
+                                    <button class="btn btn-secondary" style="padding: 4px 8px;" disabled title="Solo lectura">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
                     <?php endforeach; ?>
                     <?php if (empty($expedientes)): ?>
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 2rem;">No hay expedientes registrados.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 2rem;">No hay expedientes registrados.</td>
+                        </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
         </div>
         <?php
         $content = ob_get_clean();
-        
+
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
-    public function create() {
+    public function create()
+    {
         $this->checkAdmin();
         $title = "Crear Nuevo Expediente";
         $active = "expedientes";
-        
+
         ob_start();
         ?>
         <div class="table-container" style="max-width: 800px; margin: 0 auto;">
@@ -143,15 +150,16 @@ class ExpedienteController extends Controller {
         </div>
         <?php
         $content = ob_get_clean();
-        
+
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
-    public function store() {
+    public function store()
+    {
         $this->checkAdmin();
         $db = new \app\helpers\JsonDB('expedientes');
         $auditDb = new \app\helpers\JsonDB('auditoria');
-        
+
         $data = [
             'numero_expediente' => $_POST['numero_expediente'],
             'titulo' => $_POST['titulo'],
@@ -165,7 +173,7 @@ class ExpedienteController extends Controller {
         ];
 
         $id = $db->create($data);
-        
+
         // Registrar en auditoría
         $auditDb->create([
             'usuario' => $_SESSION['user_name'],
@@ -175,54 +183,171 @@ class ExpedienteController extends Controller {
             'fecha' => date('Y-m-d H:i:s'),
             'ip' => $_SERVER['REMOTE_ADDR']
         ]);
-        
+
         $this->redirect('/expedientes');
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $this->checkAdmin();
         $title = "Editar Expediente";
         $active = "expedientes";
-        
+
         $db = new \app\helpers\JsonDB('expedientes');
         $exp = $db->find($id);
 
-        if (!$exp) $this->redirect('/expedientes');
+        if (!$exp)
+            $this->redirect('/expedientes');
 
         ob_start();
         ?>
-        <div class="table-container" style="max-width: 800px; margin: 0 auto;">
+        <div class="table-container" style="max-width: 1100px; margin: 0 auto;">
+            <h3
+                style="margin-bottom: 2rem; color: var(--primary-color); border-bottom: 2px solid #eee; padding-bottom: 0.5rem;">
+                <i class="fas fa-file-invoice"></i> Inventario Técnico de Expediente
+            </h3>
+
             <form action="<?= $_ENV['BASE_URL'] ?>/expedientes/actualizar/<?= $id ?>" method="POST">
-                <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <!-- Campos Generales (Sin categoría) -->
+                <div class="form-grid"
+                    style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-bottom: 1.5rem;">
                     <div class="form-group">
-                        <label>Número de Expediente</label>
-                        <input type="text" name="numero_expediente" class="form-control" value="<?= $exp['numero_expediente'] ?>" required>
+                        <label>No. de Orden</label>
+                        <input type="text" name="no_orden" class="form-control" value="<?= $exp['no_orden'] ?? '' ?>">
                     </div>
                     <div class="form-group">
-                        <label>Título / Asunto</label>
+                        <label>Código</label>
+                        <input type="text" name="codigo" class="form-control" value="<?= $exp['codigo'] ?? '' ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre de las Series, subseries o asuntos</label>
                         <input type="text" name="titulo" class="form-control" value="<?= $exp['titulo'] ?>" required>
                     </div>
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label>Descripción</label>
-                        <textarea name="descripcion" class="form-control" rows="3"><?= $exp['descripcion'] ?? '' ?></textarea>
+                </div>
+
+                <!-- Fechas Extremas -->
+                <h4
+                    style="margin: 1.5rem 0 0.5rem; color: var(--secondary-color); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
+                    Fechas Extremas</h4>
+                <div class="form-grid"
+                    style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; border-left: 3px solid #3498db; padding-left: 1rem; margin-bottom: 1.5rem; background: #fcfcfc; padding-top: 1rem; padding-bottom: 1rem;">
+                    <div class="form-group">
+                        <label>Inicial</label>
+                        <input type="date" name="fecha_inicial" class="form-control" value="<?= $exp['fecha_inicial'] ?? '' ?>">
                     </div>
                     <div class="form-group">
-                        <label>Estado</label>
-                        <select name="estado" class="form-control">
-                            <option value="disponible" <?= ($exp['estado'] == 'disponible') ? 'selected' : '' ?>>Disponible</option>
-                            <option value="prestado" <?= ($exp['estado'] == 'prestado') ? 'selected' : '' ?>>Prestado</option>
-                            <option value="archivado" <?= ($exp['estado'] == 'archivado') ? 'selected' : '' ?>>Archivado</option>
-                            <option value="en_revision" <?= ($exp['estado'] == 'en_revision') ? 'selected' : '' ?>>En Revisión</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Ubicación Física</label>
-                        <input type="text" name="ubicacion_fisica" class="form-control" value="<?= $exp['ubicacion_fisica'] ?? '' ?>">
+                        <label>Final</label>
+                        <input type="date" name="fecha_final" class="form-control" value="<?= $exp['fecha_final'] ?? '' ?>">
                     </div>
                 </div>
-                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+
+                <!-- Unidad de Conservación -->
+                <h4
+                    style="margin: 1.5rem 0 0.5rem; color: var(--secondary-color); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
+                    Unidad de Conservación</h4>
+                <div class="form-grid"
+                    style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; border-left: 3px solid #2ecc71; padding-left: 1rem; margin-bottom: 1.5rem; background: #fcfcfc; padding-top: 1rem; padding-bottom: 1rem;">
+                    <div class="form-group">
+                        <label>Caja</label>
+                        <input type="text" name="caja" class="form-control" value="<?= $exp['caja'] ?? '' ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Carpeta</label>
+                        <input type="text" name="carpeta" class="form-control" value="<?= $exp['carpeta'] ?? '' ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Libro</label>
+                        <input type="text" name="libro" class="form-control" value="<?= $exp['libro'] ?? '' ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Otro / Anexo</label>
+                        <input type="text" name="otro_anexo" class="form-control" value="<?= $exp['otro_anexo'] ?? '' ?>">
+                    </div>
+                </div>
+
+                <!-- Campos de Cuantificación (Sin categoría) -->
+                <div class="form-grid"
+                    style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label>No. de Folios</label>
+                        <input type="number" name="folios" class="form-control" value="<?= $exp['folios'] ?? 0 ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Tomo</label>
+                        <input type="number" name="tomos" class="form-control" value="<?= $exp['tomos'] ?? 1 ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Soporte</label>
+                        <input type="text" name="soporte" class="form-control" value="<?= $exp['soporte'] ?? 'Papel' ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Frecuencia de Consulta</label>
+                        <select name="frecuencia_consulta" class="form-control">
+                            <option value="Alta" <?= ($exp['frecuencia_consulta'] ?? '') == 'Alta' ? 'selected' : '' ?>>Alta
+                            </option>
+                            <option value="Media" <?= ($exp['frecuencia_consulta'] ?? '') == 'Media' ? 'selected' : '' ?>>Media
+                            </option>
+                            <option value="Baja" <?= ($exp['frecuencia_consulta'] ?? '') == 'Baja' ? 'selected' : '' ?>>Baja
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- CITA -->
+                <h4
+                    style="margin: 1.5rem 0 0.5rem; color: var(--secondary-color); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
+                    CITA</h4>
+                <div class="form-grid"
+                    style="display: grid; grid-template-columns: 1fr; gap: 1rem; border-left: 3px solid #9b59b6; padding-left: 1rem; margin-bottom: 1.5rem; background: #fcfcfc; padding-top: 1rem; padding-bottom: 1rem;">
+                    <div class="form-group">
+                        <label>Expediente-CITA</label>
+                        <input type="text" name="expediente_cita" class="form-control"
+                            value="<?= $exp['expediente_cita'] ?? '' ?>">
+                    </div>
+                </div>
+
+                <!-- Notas -->
+                <h4
+                    style="margin: 1.5rem 0 0.5rem; color: var(--secondary-color); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
+                    Notas</h4>
+                <div class="form-grid"
+                    style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; border-left: 3px solid #95a5a6; padding-left: 1rem; margin-bottom: 1.5rem; background: #fcfcfc; padding-top: 1rem; padding-bottom: 1rem;">
+                    <div class="form-group">
+                        <label>Expediente</label>
+                        <input type="text" name="numero_expediente" class="form-control"
+                            value="<?= $exp['numero_expediente'] ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Interesado</label>
+                        <input type="text" name="interesado" class="form-control" value="<?= $exp['interesado'] ?? '' ?>">
+                    </div>
+                    <div class="form-group">
+                        <label>Municipio</label>
+                        <input type="text" name="municipio" class="form-control" value="<?= $exp['municipio'] ?? '' ?>">
+                    </div>
+                </div>
+
+                <!-- CONTROL ARCHIVO (Al final por solicitud del usuario) -->
+                <h4
+                    style="margin: 1.5rem 0 0.5rem; color: var(--secondary-color); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">
+                    Control Archivo</h4>
+                <div class="form-grid"
+                    style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; border-left: 3px solid #e67e22; padding-left: 1rem; margin-bottom: 1.5rem; background: #fcfcfc; padding-top: 1rem; padding-bottom: 1rem;">
+                    <div class="form-group">
+                        <label>Prestamo</label>
+                        <input type="text" name="estado" class="form-control" value="<?= $exp['estado'] ?>" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Ubicación</label>
+                        <input type="text" name="ubicacion_fisica" class="form-control"
+                            value="<?= $exp['ubicacion_fisica'] ?? '' ?>">
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid #eee;">
                     <a href="<?= $_ENV['BASE_URL'] ?>/expedientes" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-primary">Actualizar Cambios</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </div>
             </form>
         </div>
@@ -231,21 +356,36 @@ class ExpedienteController extends Controller {
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
-    public function update($id) {
+    public function update($id)
+    {
         $this->checkAdmin();
         $db = new \app\helpers\JsonDB('expedientes');
         $auditDb = new \app\helpers\JsonDB('auditoria');
-        
+
         $data = [
-            'numero_expediente' => $_POST['numero_expediente'],
+            'no_orden' => $_POST['no_orden'] ?? '',
+            'codigo' => $_POST['codigo'] ?? '',
             'titulo' => $_POST['titulo'],
-            'descripcion' => $_POST['descripcion'],
-            'estado' => $_POST['estado'],
-            'ubicacion_fisica' => $_POST['ubicacion_fisica']
+            'fecha_inicial' => $_POST['fecha_inicial'] ?? '',
+            'fecha_final' => $_POST['fecha_final'] ?? '',
+            'caja' => $_POST['caja'] ?? '',
+            'carpeta' => $_POST['carpeta'] ?? '',
+            'libro' => $_POST['libro'] ?? '',
+            'otro_anexo' => $_POST['otro_anexo'] ?? '',
+            'folios' => $_POST['folios'] ?? 0,
+            'tomos' => $_POST['tomos'] ?? 1,
+            'soporte' => $_POST['soporte'] ?? 'Papel',
+            'frecuencia_consulta' => $_POST['frecuencia_consulta'] ?? 'Media',
+            'ubicacion_fisica' => $_POST['ubicacion_fisica'] ?? '',
+            'expediente_cita' => $_POST['expediente_cita'] ?? '',
+            'numero_expediente' => $_POST['numero_expediente'],
+            'interesado' => $_POST['interesado'] ?? '',
+            'municipio' => $_POST['municipio'] ?? '',
+            'estado' => $_POST['estado'] ?? 'disponible'
         ];
 
         $db->update($id, $data);
-        
+
         // Auditoría
         $auditDb->create([
             'usuario' => $_SESSION['user_name'],
@@ -255,7 +395,7 @@ class ExpedienteController extends Controller {
             'fecha' => date('Y-m-d H:i:s'),
             'ip' => $_SERVER['REMOTE_ADDR']
         ]);
-        
+
         $this->redirect('/expedientes');
     }
 }

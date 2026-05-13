@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 800">
+  <!-- Background -->
+  <rect width="1000" height="800" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="500" y="40" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#2c3e50">Esquema SQL Tentativo - SGD-CAS (Con Relaciones)</text>
+  
+  <!-- Table: EXPEDIENTES -->
+  <g transform="translate(50, 80)">
+    <rect width="280" height="420" rx="8" fill="#ffffff" stroke="#3498db" stroke-width="2"/>
+    <rect width="280" height="40" rx="8" fill="#3498db"/>
+    <text x="140" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#ffffff">EXPEDIENTES</text>
+    <g font-family="Arial, sans-serif" font-size="12" fill="#34495e">
+      <text x="10" y="65">id (INT, PK)</text>
+      <text x="10" y="85">no_orden, codigo, titulo...</text>
+      <text x="10" y="105">folios, tomos, soporte...</text>
+      <text x="10" y="125">estado, ubicacion_fisica...</text>
+      <text x="10" y="145">numero_expediente (UNIQUE)</text>
+      <text x="10" y="400" fill="#7f8c8d" font-style="italic">+ 14 campos técnicos</text>
+    </g>
+  </g>
+  
+  <!-- Table: PRESTAMOS -->
+  <g transform="translate(380, 80)">
+    <rect width="250" height="240" rx="8" fill="#ffffff" stroke="#e67e22" stroke-width="2"/>
+    <rect width="250" height="40" rx="8" fill="#e67e22"/>
+    <text x="125" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#ffffff">PRESTAMOS</text>
+    <g font-family="Arial, sans-serif" font-size="12" fill="#34495e">
+      <text x="10" y="65">id (INT, PK)</text>
+      <text x="10" y="85" fill="#e67e22" font-weight="bold">expediente_id (FK)</text>
+      <text x="10" y="105" fill="#9b59b6" font-weight="bold">usuario_sol_id (FK)</text>
+      <text x="10" y="125">fecha_solicitud</text>
+      <text x="10" y="145">fecha_prestamo</text>
+      <text x="10" y="165">estado</text>
+    </g>
+  </g>
+  
+  <!-- Table: DEVOLUCIONES -->
+  <g transform="translate(680, 80)">
+    <rect width="270" height="240" rx="8" fill="#ffffff" stroke="#2ecc71" stroke-width="2"/>
+    <rect width="270" height="40" rx="8" fill="#2ecc71"/>
+    <text x="135" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#ffffff">DEVOLUCIONES</text>
+    <g font-family="Arial, sans-serif" font-size="12" fill="#34495e">
+      <text x="10" y="65">id (INT, PK)</text>
+      <text x="10" y="85" fill="#e67e22" font-weight="bold">prestamo_id (FK)</text>
+      <text x="10" y="105">fecha_devolucion</text>
+      <text x="10" y="125">folios_recibidos</text>
+      <text x="10" y="145">usuario_recibe</text>
+    </g>
+  </g>
+  
+  <!-- Table: USUARIOS -->
+  <g transform="translate(380, 360)">
+    <rect width="250" height="140" rx="8" fill="#ffffff" stroke="#9b59b6" stroke-width="2"/>
+    <rect width="250" height="40" rx="8" fill="#9b59b6"/>
+    <text x="125" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#ffffff">USUARIOS</text>
+    <g font-family="Arial, sans-serif" font-size="12" fill="#34495e">
+      <text x="10" y="65">id (INT, PK)</text>
+      <text x="10" y="85">nombre</text>
+      <text x="10" y="105">rol (Admin/User)</text>
+    </g>
+  </g>
+  
+  <!-- Table: AUDITORIA -->
+  <g transform="translate(680, 360)">
+    <rect width="270" height="160" rx="8" fill="#ffffff" stroke="#95a5a6" stroke-width="2"/>
+    <rect width="270" height="40" rx="8" fill="#95a5a6"/>
+    <text x="135" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#ffffff">AUDITORIA</text>
+    <g font-family="Arial, sans-serif" font-size="12" fill="#34495e">
+      <text x="10" y="65">id (INT, PK)</text>
+      <text x="10" y="85" fill="#9b59b6" font-weight="bold">usuario_id (FK)</text>
+      <text x="10" y="105">accion (UPDATE, CREATE...)</text>
+      <text x="10" y="125">tabla_afectada</text>
+      <text x="10" y="145">registro_id</text>
+    </g>
+  </g>
+  
+  <!-- Connectors -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#bdc3c7" />
+    </marker>
+  </defs>
+
+  <!-- Rel: Expedientes -> Prestamos -->
+  <path d="M 330 150 L 380 150" fill="none" stroke="#3498db" stroke-width="2" stroke-dasharray="4" marker-end="url(#arrowhead)"/>
+  
+  <!-- Rel: Usuarios -> Prestamos -->
+  <path d="M 505 360 L 505 320" fill="none" stroke="#9b59b6" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Rel: Prestamos -> Devoluciones -->
+  <path d="M 630 150 L 680 150" fill="none" stroke="#e67e22" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Rel: Usuarios -> Auditoria (La conexión que faltaba) -->
+  <path d="M 630 430 L 680 430" fill="none" stroke="#9b59b6" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Legend -->
+  <g transform="translate(50, 520)" font-family="Arial, sans-serif" font-size="11" fill="#7f8c8d">
+    <text x="0" y="0" font-weight="bold">Leyenda de Relaciones:</text>
+    <text x="0" y="20" fill="#3498db">--- Referencia Técnica (Expediente)</text>
+    <text x="0" y="40" fill="#9b59b6">___ Vínculo de Usuario (Responsable)</text>
+    <text x="0" y="60" fill="#e67e22">___ Flujo de Proceso (Préstamo-Devolución)</text>
+  </g>
+</svg>
