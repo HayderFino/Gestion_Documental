@@ -1,9 +1,8 @@
 @echo off
-git init
-git remote add origin https://github.com/HayderFino/Gestion_Documental.git
+echo Limpiando archivos que deben ser ignorados...
+git rm -r --cached .agents/workflows 2>nul
 git add .
-git commit -m "Initial commit - SGD CAS logic and documentation"
-git branch -M main
-git push -u origin main
-echo Proceso finalizado.
+git commit -m "chore: remover archivos ignorados del repositorio"
+git push origin main
+echo Proceso de limpieza finalizado.
 pause
