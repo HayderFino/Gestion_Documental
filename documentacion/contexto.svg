@@ -10,19 +10,19 @@
   <!-- Admin Node -->
   <circle cx="100" cy="150" r="40" fill="#08427b" stroke="#052e56" stroke-width="2"/>
   <text x="100" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Administrador</text>
-  <text x="100" y="225" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">(Verificación/Control)</text>
+  <text x="100" y="225" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">(Control/Verificación)</text>
   
   <!-- User Node -->
   <circle cx="500" cy="150" r="40" fill="#08427b" stroke="#052e56" stroke-width="2"/>
   <text x="500" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#333" text-anchor="middle">Usuario</text>
-  <text x="500" y="225" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">(Solicitud/Reporte)</text>
+  <text x="500" y="225" font-family="Arial, sans-serif" font-size="10" fill="#666" text-anchor="middle">(Solicitante/Funcionario)</text>
   
   <!-- Lines -->
   <path d="M140 150 L225 150" stroke="#0b4884" stroke-width="2" marker-end="url(#arrowhead)"/>
   <path d="M460 150 L375 150" stroke="#0b4884" stroke-width="2" marker-end="url(#arrowhead)"/>
   
-  <text x="182" y="140" font-family="Arial, sans-serif" font-size="10" fill="#08427b" text-anchor="middle">Verifica</text>
-  <text x="418" y="140" font-family="Arial, sans-serif" font-size="10" fill="#08427b" text-anchor="middle">Solicita</text>
+  <text x="182" y="140" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#08427b" text-anchor="middle">Acepta / Rechaza</text>
+  <text x="418" y="140" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#08427b" text-anchor="middle">Solicita / Reporta</text>
   
   <defs>
     <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">

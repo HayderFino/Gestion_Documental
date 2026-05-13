@@ -27,7 +27,8 @@
   <text x="310" y="340" font-family="Arial, sans-serif" font-size="12" fill="#333">expediente_id (FK)</text>
   <text x="310" y="360" font-family="Arial, sans-serif" font-size="12" fill="#333">estado</text>
   <text x="310" y="380" font-family="Arial, sans-serif" font-size="12" fill="#d63384">datos_entrega (JSON)</text>
-  <text x="310" y="400" font-family="Arial, sans-serif" font-size="12" fill="#666">...folios, tomos, actos</text>
+  <text x="310" y="400" font-family="Arial, sans-serif" font-size="12" fill="#dc3545">rechazo_last_reason</text>
+  <text x="310" y="420" font-family="Arial, sans-serif" font-size="12" fill="#666">...folios, tomos, actos</text>
 
   <!-- Relationships -->
   <path d="M140 170 L140 340 L300 340" fill="none" stroke="#666" stroke-width="1.5" stroke-dasharray="4"/>

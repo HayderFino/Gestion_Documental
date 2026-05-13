@@ -60,8 +60,10 @@ El sistema implementa un modelo de **Responsabilidad Compartida** y **Doble Veri
 
 ### 📤 Proceso de Devolución
 1.  **Diligenciamiento:** El **Usuario** reporta el estado técnico del retorno (folios, tomos, trámites).
-2.  **Recepción:** El **Administrador** verifica físicamente que los folios y tomos coincidan con lo reportado por el usuario.
-3.  **Cierre:** El **Administrador** acepta la entrega, liberando el expediente para su próximo uso.
+2.  **Recepción/Verificación:** El **Administrador** verifica físicamente el expediente.
+3.  **Decisión Administrativa:**
+    *   **Aceptar:** Si todo coincide, el Administrador confirma la recepción y el expediente queda **Disponible**.
+    *   **Rechazar:** Si hay inconsistencias, el Administrador registra el motivo del rechazo. El préstamo vuelve a estado **Entregado** y el usuario debe corregir la información.
 
 ---
 

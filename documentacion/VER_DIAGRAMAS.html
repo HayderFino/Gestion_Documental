@@ -101,7 +101,7 @@
 
         <!-- Diagrama 4 - NUEVO FLOWCHART -->
         <h2>4. Workflow de Doble Verificación</h2>
-        <p class="description">Flujo lógico de transiciones de estado para garantizar la integridad documental.</p>
+        <p class="description">Flujo lógico de transiciones de estado y control de rechazos.</p>
         <div class="diagram-card">
             <div class="mermaid">
             graph TD
@@ -111,8 +111,8 @@
                 C --> D[Usuario Diligencia Entrega]
                 D --> E[Estado: Pendiente Devolución]
                 E --> F{Admin verifica retorno?}
-                F -- No --> D
-                F -- Si --> G[Estado: Disponible]
+                F -- Rechazar --> D
+                F -- Aceptar --> G[Estado: Disponible]
                 G --> H[Fin: Expediente Liberado]
 
                 style C fill:#d1e7dd,stroke:#0f5132
