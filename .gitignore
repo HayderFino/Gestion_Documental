@@ -1,6 +1,1 @@
 .agents/workflows
-.env
-logs/
-*.log
-.DS_Store
-Thumbs.db
