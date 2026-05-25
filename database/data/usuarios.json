@@ -12,7 +12,7 @@
         "id": 2,
         "usuario": "jpererz",
         "password": "123",
-        "nombre_completo": "Juan Pérez",
+        "nombre_completo": "Juan P\u00e9rez",
         "email": "jperez@cas.gov.co",
         "rol_nombre": "Usuario",
         "estado": "activo"
@@ -21,18 +21,28 @@
         "id": 3,
         "usuario": "jefe",
         "password": "123",
-        "nombre_completo": "Jefe de Línea",
+        "nombre_completo": "Jefe de L\u00ednea",
         "email": "jefe@cas.gov.co",
-        "rol_nombre": "Jefe de Línea",
+        "rol_nombre": "Jefe de L\u00ednea",
         "estado": "activo"
     },
     {
         "id": 4,
         "usuario": "mrodriguez",
         "password": "123",
-        "nombre_completo": "María Rodríguez",
+        "nombre_completo": "Mar\u00eda Rodr\u00edguez",
         "email": "mrodriguez@cas.gov.co",
         "rol_nombre": "Usuario",
         "estado": "activo"
+    },
+    {
+        "usuario": "carlos",
+        "password": "123",
+        "nombre_completo": "carlos - fuid 2026",
+        "email": "casgit7@gmail.com",
+        "rol_nombre": "Usuario",
+        "estado": "activo",
+        "id": 5,
+        "created_at": "2026-05-25 17:38:13"
     }
 ]

@@ -1,9 +1,18 @@
+<?php
+/**
+ * Layout principal. Estas variables se pasan desde el controlador.
+ * Se inicializan por si la plantilla se carga sin todos los datos.
+ */
+$active = $active ?? '';
+$content = $content ?? '';
+$title = $title ?? 'Gestión de Expedientes';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'Gestión de Expedientes' ?> - CAS</title>
+    <title><?= $title ?> - CAS</title>
     <link rel="stylesheet" href="<?= $_ENV['BASE_URL'] ?>/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
