@@ -168,7 +168,15 @@ class PrestamoController extends Controller {
         $active = "prestamos";
         
         $expedienteDb = new \app\helpers\JsonDB('expedientes');
-        $expedientes = $expedienteDb->where('estado', 'disponible');
+        $allDisponibles = $expedienteDb->where('estado', 'disponible');
+        
+        $asignacionesDb = new \app\helpers\JsonDB('asignaciones');
+        $misAsignaciones = $asignacionesDb->where('usuario_id', $_SESSION['user_id']);
+        $misIds = array_column($misAsignaciones, 'expediente_id');
+        
+        $expedientes = array_filter($allDisponibles, function($exp) use ($misIds) {
+            return in_array($exp['id'], $misIds);
+        });
         
         $lineas = ['Recurso Hídrico', 'Minería y Ecosistemas', 'Residuos e Infraestructura', 'Forestal', 'Fauna', 'No sabe'];
         $vinculaciones = ['Funcionario', 'Contratista'];

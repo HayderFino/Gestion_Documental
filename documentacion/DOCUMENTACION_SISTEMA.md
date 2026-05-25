@@ -44,17 +44,24 @@ Estructura de las tablas y relaciones de la base de datos relacional (12 tablas)
 ### 📁 Archivos y Tablas de Datos
 - `expedientes`: Maestro de documentos, metadatos técnicos (tomos, folios, ubicación) y su disponibilidad.
 - `prestamos`: Registro de solicitudes, datos de entrega, motivos y línea.
-- `usuarios`: Gestión de acceso con roles y permisos asociados.
+- `usuarios`: Gestión de acceso con roles y permisos asociados (incluye el rol **Jefe de Línea**).
+- `asignaciones`: Relación de asignación de expedientes a usuarios encargados.
 - `auditoria`: Registro detallado de cada transacción para cumplimiento legal.
 
 ---
 
 ## 5. Flujo de Trabajo (Workflow CAS)
 
-El sistema implementa un modelo de **Responsabilidad Compartida** y **Doble Verificación**:
+El sistema implementa un modelo de **Responsabilidad Compartida**, **Control de Acceso por Asignación** y **Doble Verificación**:
+
+### 🔑 Proceso de Asignación (Control de Acceso)
+1.  **Asignación:** El **Jefe de Línea** o el **Administrador** accede a la vista de asignación de un expediente.
+2.  **Vinculación:** Selecciona uno o varios usuarios a los que asignará el expediente.
+3.  **Filtrado:** El sistema restringe la vista del **Usuario** común para que sólo visualice y pueda solicitar préstamos sobre sus expedientes asignados.
+4.  **Trazabilidad:** Cada asignación o desasignación se registra en la auditoría del sistema.
 
 ### 📥 Proceso de Préstamo
-1.  **Solicitud:** El **Usuario** diligencia el formulario indicando motivo y línea.
+1.  **Solicitud:** El **Usuario** diligencia el formulario indicando motivo y línea (sólo sobre expedientes que tenga asignados).
 2.  **Verificación:** El **Administrador** revisa los detalles de la solicitud.
 3.  **Aprobación:** El **Administrador** confirma la entrega física y el sistema actualiza el expediente a "Prestado".
 

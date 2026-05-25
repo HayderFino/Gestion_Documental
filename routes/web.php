@@ -22,6 +22,8 @@ $router->add('GET', '/expedientes/crear', [ExpedienteController::class, 'create'
 $router->add('POST', '/expedientes/guardar', [ExpedienteController::class, 'store']);
 $router->add('GET', '/expedientes/editar/{id}', [ExpedienteController::class, 'edit']);
 $router->add('POST', '/expedientes/actualizar/{id}', [ExpedienteController::class, 'update']);
+$router->add('GET', '/expedientes/asignar/{id}', [ExpedienteController::class, 'asignar']);
+$router->add('POST', '/expedientes/asignar/{id}', [ExpedienteController::class, 'guardarAsignacion']);
 
 // Préstamos
 $router->add('GET', '/prestamos', [\app\controllers\PrestamoController::class, 'index']);
@@ -38,6 +40,10 @@ $router->add('POST', '/prestamos/rechazar-devolucion/{id}', [\app\controllers\Pr
 
 // Usuarios
 $router->add('GET', '/usuarios', [\app\controllers\UsuarioController::class, 'index']);
+$router->add('GET', '/usuarios/crear', [\app\controllers\UsuarioController::class, 'create']);
+$router->add('POST', '/usuarios/guardar', [\app\controllers\UsuarioController::class, 'store']);
+$router->add('GET', '/usuarios/editar/{id}', [\app\controllers\UsuarioController::class, 'edit']);
+$router->add('POST', '/usuarios/actualizar/{id}', [\app\controllers\UsuarioController::class, 'update']);
 
 // Auditoría
 $router->add('GET', '/auditoria', [\app\controllers\AuditoriaController::class, 'index']);

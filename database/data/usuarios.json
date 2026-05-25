@@ -16,5 +16,23 @@
         "email": "jperez@cas.gov.co",
         "rol_nombre": "Usuario",
         "estado": "activo"
+    },
+    {
+        "id": 3,
+        "usuario": "jefe",
+        "password": "123",
+        "nombre_completo": "Jefe de Línea",
+        "email": "jefe@cas.gov.co",
+        "rol_nombre": "Jefe de Línea",
+        "estado": "activo"
+    },
+    {
+        "id": 4,
+        "usuario": "mrodriguez",
+        "password": "123",
+        "nombre_completo": "María Rodríguez",
+        "email": "mrodriguez@cas.gov.co",
+        "rol_nombre": "Usuario",
+        "estado": "activo"
     }
 ]

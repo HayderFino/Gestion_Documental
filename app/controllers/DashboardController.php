@@ -21,12 +21,30 @@ class DashboardController extends Controller {
         
         $allPrestamos = $preDb->all();
         
-        $stats = [
-            'total_expedientes' => count($expDb->all()),
-            'prestamos_activos' => count($preDb->where('estado', 'entregado')),
-            'solicitudes_pendientes' => count($preDb->where('estado', 'pendiente_prestamo')),
-            'devoluciones_pendientes' => count($preDb->where('estado', 'pendiente_devolucion'))
-        ];
+        if ($role !== 'Administrador' && $role !== 'Jefe de Línea') {
+            $asigDb = new \app\helpers\JsonDB('asignaciones');
+            $misAsignaciones = $asigDb->where('usuario_id', $userId);
+            
+            $stats = [
+                'total_expedientes' => count($misAsignaciones),
+                'prestamos_activos' => count(array_filter($allPrestamos, function($p) use ($userId) {
+                    return ($p['usuario_solicitante_id'] ?? null) == $userId && $p['estado'] === 'entregado';
+                })),
+                'solicitudes_pendientes' => count(array_filter($allPrestamos, function($p) use ($userId) {
+                    return ($p['usuario_solicitante_id'] ?? null) == $userId && $p['estado'] === 'pendiente_prestamo';
+                })),
+                'devoluciones_pendientes' => count(array_filter($allPrestamos, function($p) use ($userId) {
+                    return ($p['usuario_solicitante_id'] ?? null) == $userId && $p['estado'] === 'pendiente_devolucion';
+                }))
+            ];
+        } else {
+            $stats = [
+                'total_expedientes' => count($expDb->all()),
+                'prestamos_activos' => count($preDb->where('estado', 'entregado')),
+                'solicitudes_pendientes' => count($preDb->where('estado', 'pendiente_prestamo')),
+                'devoluciones_pendientes' => count($preDb->where('estado', 'pendiente_devolucion'))
+            ];
+        }
 
         ob_start();
         ?>

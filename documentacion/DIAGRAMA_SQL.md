@@ -6,7 +6,9 @@ Este diagrama representa la transición del modelo de persistencia JSON actual a
 erDiagram
     USUARIOS ||--o{ PRESTAMOS : solicita
     USUARIOS ||--o{ AUDITORIA : genera
+    USUARIOS ||--o{ ASIGNACIONES : "tiene asignado"
     EXPEDIENTES ||--o{ PRESTAMOS : "se presta"
+    EXPEDIENTES ||--o{ ASIGNACIONES : "es asignado a"
     PRESTAMOS ||--|| DEVOLUCIONES : "se cierra con"
 
     USUARIOS {
@@ -14,8 +16,16 @@ erDiagram
         string nombre
         string email
         string password
-        string rol "Administrador / Usuario"
+        string rol "Administrador / Jefe de Línea / Usuario"
         datetime created_at
+    }
+
+    ASIGNACIONES {
+        int id PK
+        int expediente_id FK
+        int usuario_id FK
+        string asignado_por
+        datetime fecha_asignacion
     }
 
     EXPEDIENTES {

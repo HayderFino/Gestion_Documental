@@ -19,6 +19,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Search Box Table Filter
+    const searchInput = document.querySelector('.search-box input');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', () => {
+            const term = searchInput.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('table tbody tr');
+            
+            rows.forEach(row => {
+                if (row.cells.length === 1 && (row.innerText.includes('No hay') || row.innerText.includes('no hay'))) {
+                    return;
+                }
+                const text = row.innerText.toLowerCase();
+                if (text.includes(term)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    }
+
     // Form validation and confirmation
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
