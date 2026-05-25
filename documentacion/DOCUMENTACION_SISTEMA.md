@@ -14,7 +14,7 @@ Muestra la interacción del personal de la CAS con el sistema SGD.
 ---
 
 ## 2. Diagrama de Contenedores (Nivel 2)
-Desglose de la tecnología: Servidor Apache, Lógica PHP MVC y Persistencia JSON.
+Desglose de la tecnología: Servidor Apache, Lógica PHP MVC, Base de Datos SQL (MySQL/MariaDB) y Persistencia JsonDB de respaldo.
 
 <div align="center">
   <img src="contenedores.svg" width="800">
@@ -23,7 +23,7 @@ Desglose de la tecnología: Servidor Apache, Lógica PHP MVC y Persistencia JSON
 ---
 
 ## 3. Modelo Entidad-Relación (Datos)
-Estructura de las tablas y relaciones lógicas entre los archivos JSON.
+Estructura de las tablas y relaciones de la base de datos relacional (12 tablas).
 
 <div align="center">
   <img src="modelo_er.svg" width="800">
@@ -39,13 +39,13 @@ Estructura de las tablas y relaciones lógicas entre los archivos JSON.
 
 ### 🧠 Capa de Aplicación
 - **Rutas:** Despachador basado en Regex.
-- **Persistencia:** Motor `JsonDB` que emula el comportamiento de una base de datos SQL sobre archivos de texto.
+- **Persistencia:** Base de datos relacional SQL (MySQL/MariaDB) con esquema estructurado. Cuenta con una capa de respaldo y pruebas `JsonDB` sobre archivos planos en formato JSON.
 
-### 📁 Archivos de Datos (JSON)
-- `expedientes.json`: Maestro de documentos y su estado de disponibilidad.
-- `prestamos.json`: Registro de solicitudes, entregas y datos técnicos de retorno.
-- `usuarios.json`: Gestión de acceso con roles diferenciados (**Administrador** y **Usuario**).
-- `auditoria.json`: Registro de cada acción realizada en el sistema para trazabilidad legal.
+### 📁 Archivos y Tablas de Datos
+- `expedientes`: Maestro de documentos, metadatos técnicos (tomos, folios, ubicación) y su disponibilidad.
+- `prestamos`: Registro de solicitudes, datos de entrega, motivos y línea.
+- `usuarios`: Gestión de acceso con roles y permisos asociados.
+- `auditoria`: Registro detallado de cada transacción para cumplimiento legal.
 
 ---
 

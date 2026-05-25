@@ -50,13 +50,14 @@
 
         <!-- Diagrama 2 -->
         <h2>2. Diagrama de Contenedores (Nivel 2)</h2>
-        <p class="description">Tecnologías y flujo de datos interno con persistencia JsonDB.</p>
+        <p class="description">Tecnologías y flujo de datos interno con base de datos relacional SQL (MySQL/MariaDB) y persistencia JsonDB de respaldo.</p>
         <div class="diagram-card">
             <div class="mermaid">
             graph LR
                 classDef browser fill:#6da9e4,stroke:#4b86b4,color:#fff;
                 classDef logic fill:#28a745,stroke:#1e7e34,color:#fff;
-                classDef storage fill:#ffc107,stroke:#d39e00,color:#000;
+                classDef storage fill:#0284c7,stroke:#0369a1,color:#fff;
+                classDef backup fill:#ffc107,stroke:#d39e00,color:#000;
 
                 User((<b>Usuario</b>))
                 
@@ -65,36 +66,142 @@
                     Backend["<b>Controlador MVC</b><br/>(PHP + Router)"]:::logic
                     
                     subgraph Persistencia [Motor de Datos]
-                        JSON[("<b>JsonDB</b><br/>(Archivos Planos)")]:::storage
+                        DB[("<b>Base de Datos SQL</b><br/>(MySQL / MariaDB)")]:::storage
+                        JSON[("<b>JsonDB Backup</b><br/>(Archivos Planos)")]:::backup
                     end
                 end
 
                 User -- "Interactúa" --> Frontend
                 Frontend -- "HTTP" --> Backend
-                Backend -- "Gestiona" --> JSON
+                Backend -- "Gestiona" --> DB
+                Backend -- "Respaldo / Mock" --> JSON
             </div>
         </div>
 
         <!-- Diagrama 3 -->
         <h2>3. Diagrama Entidad-Relación (Lógico)</h2>
-        <p class="description">Estructura de datos integrada en el motor de persistencia.</p>
+        <p class="description">Modelo relacional completo de la base de datos relacional (12 tablas unificadas).</p>
         <div class="diagram-card">
             <div class="mermaid">
             erDiagram
-                USUARIO ||--o{ PRESTAMO : solicita
-                EXPEDIENTE ||--o{ PRESTAMO : se_presta
-                PRESTAMO {
-                    string estado
-                    json datos_entrega
-                }
+                ROLES ||--o{ USUARIOS : "define"
+                ROLES ||--o{ ROL_PERMISO : "contiene"
+                PERMISOS ||--o{ ROL_PERMISO : "se vincula"
                 
-                USUARIO { 
-                    string nombre
-                    string rol
+                TRAMITES ||--o{ EXPEDIENTES : "clasifica"
+                EXPEDIENTES ||--o{ LINEAS_EXPEDIENTE : "desglosa"
+                EXPEDIENTES ||--o{ PRESTAMOS : "involucra"
+                
+                USUARIOS ||--o{ PRESTAMOS : "solicita"
+                USUARIOS ||--o{ PRESTAMOS : "gestiona"
+                USUARIOS ||--o{ DEVOLUCIONES : "recibe"
+                USUARIOS ||--o{ AUDITORIA : "registra"
+                
+                MOTIVOS_CONSULTA ||--o{ PRESTAMOS : "justifica"
+                PRESTAMOS ||--o| DEVOLUCIONES : "completa"
+
+                ROLES {
+                    int id PK
+                    string nombre UQ
+                    string descripcion
+                    timestamp created_at
+                    timestamp updated_at
                 }
-                EXPEDIENTE { 
-                    string numero
-                    string ubicacion
+                PERMISOS {
+                    int id PK
+                    string nombre UQ
+                    string descripcion
+                    timestamp created_at
+                }
+                ROL_PERMISO {
+                    int rol_id FK
+                    int permiso_id FK
+                }
+                USUARIOS {
+                    int id PK
+                    int rol_id FK
+                    string usuario UQ
+                    string password
+                    string nombre_completo
+                    string email UQ
+                    string estado
+                    datetime ultimo_login
+                    timestamp created_at
+                    timestamp updated_at
+                }
+                TRAMITES {
+                    int id PK
+                    string nombre UQ
+                    string descripcion
+                    timestamp created_at
+                }
+                EXPEDIENTES {
+                    int id PK
+                    string numero_expediente UQ
+                    string titulo
+                    string descripcion
+                    int tramite_id FK
+                    date fecha_apertura
+                    string estado
+                    int numero_tomos
+                    int foliacion_total
+                    string ubicacion_fisica
+                    timestamp created_at
+                    timestamp updated_at
+                }
+                LINEAS_EXPEDIENTE {
+                    int id PK
+                    int expediente_id FK
+                    string nombre
+                    string tipo
+                    string descripcion
+                    timestamp created_at
+                }
+                MOTIVOS_CONSULTA {
+                    int id PK
+                    string nombre UQ
+                    string descripcion
+                    timestamp created_at
+                }
+                PRESTAMOS {
+                    int id PK
+                    int expediente_id FK
+                    int usuario_solicitante_id FK
+                    int usuario_archivo_id FK
+                    int motivo_id FK
+                    timestamp fecha_prestamo
+                    datetime fecha_devolucion_prevista
+                    string observaciones
+                    string estado
+                    timestamp created_at
+                }
+                DEVOLUCIONES {
+                    int id PK
+                    int prestamo_id FK
+                    int usuario_recibe_id FK
+                    timestamp fecha_devolucion
+                    string estado_expediente
+                    string observaciones
+                    timestamp created_at
+                }
+                AUDITORIA {
+                    int id PK
+                    int usuario_id FK
+                    string accion
+                    string tabla_afectada
+                    int registro_id
+                    json valor_anterior
+                    json valor_nuevo
+                    string ip_address
+                    string user_agent
+                    timestamp created_at
+                }
+                LOGS {
+                    int id PK
+                    string nivel
+                    string mensaje
+                    json contexto
+                    timestamp created_at
                 }
             </div>
         </div>
