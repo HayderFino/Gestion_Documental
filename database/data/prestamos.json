@@ -238,5 +238,21 @@
             "estado_fisico": "bueno",
             "observaciones_devolucion": ""
         }
+    },
+    {
+        "expediente_id": "1",
+        "numero_expediente": "CARPETA BIOSOLIDOS 0001-2021",
+        "solicitante_nombre": "Juan P\u00e9rez",
+        "usuario_solicitante_id": 2,
+        "fecha_solicitud": "2026-05-25",
+        "tipo_vinculacion": "Funcionario",
+        "linea_expediente": "Residuos e Infraestructura",
+        "motivo_consulta": "Auto Liquidaci\u00f3n",
+        "observaciones": "ninguna",
+        "estado": "entregado",
+        "id": 12,
+        "created_at": "2026-05-25 17:44:25",
+        "fecha_prestamo": "2026-05-25 17:45:52",
+        "admin_aprueba": "Administrador Sistema"
     }
 ]

@@ -14,12 +14,13 @@
         "tomos": 1,
         "soporte": "Papel",
         "frecuencia_consulta": "Alta",
-        "estado": "disponible",
+        "estado": "prestado",
         "ubicacion_fisica": "H47-B",
         "expediente_cita": "CARPETA BIOSOLIDOS 0001-2021",
         "numero_expediente": "CARPETA BIOSOLIDOS 0001-2021",
         "interesado": "EMPRESA DE ASEO DE SANTANDER S.A. E.S.P.",
-        "municipio": "LOS SANTOS"
+        "municipio": "LOS SANTOS",
+        "detalle_estado": "JUAN P\u00e9REZ (25\/05\/2026)"
     },
     {
         "id": 2,

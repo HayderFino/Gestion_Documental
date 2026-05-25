@@ -1,1 +1,16 @@
-[]
+[
+    {
+        "id": 1,
+        "expediente_id": 1,
+        "usuario_id": 2,
+        "asignado_por": "Jefe de L\u00ednea",
+        "fecha_asignacion": "2026-05-25 17:43:01"
+    },
+    {
+        "id": 2,
+        "expediente_id": 2,
+        "usuario_id": 4,
+        "asignado_por": "Jefe de L\u00ednea",
+        "fecha_asignacion": "2026-05-25 17:43:06"
+    }
+]

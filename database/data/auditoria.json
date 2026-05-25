@@ -329,5 +329,47 @@
         "detalles": "Usuario creado: carlos (carlos - fuid 2026) con rol Usuario",
         "id": 33,
         "created_at": "2026-05-25 17:38:13"
+    },
+    {
+        "usuario": "Jefe de L\u00ednea",
+        "accion": "ASSIGN_EXPEDIENTE",
+        "tabla": "asignaciones",
+        "registro_id": 1,
+        "fecha": "2026-05-25 17:43:01",
+        "ip": "::1",
+        "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Juan P\u00e9rez",
+        "id": 34,
+        "created_at": "2026-05-25 17:43:01"
+    },
+    {
+        "usuario": "Jefe de L\u00ednea",
+        "accion": "ASSIGN_EXPEDIENTE",
+        "tabla": "asignaciones",
+        "registro_id": 2,
+        "fecha": "2026-05-25 17:43:06",
+        "ip": "::1",
+        "detalles": "Expediente 210.10.00135-2022 asignado a: Mar\u00eda Rodr\u00edguez",
+        "id": 35,
+        "created_at": "2026-05-25 17:43:06"
+    },
+    {
+        "usuario": "Juan P\u00e9rez",
+        "accion": "REQUEST_PRESTAMO",
+        "tabla": "prestamos",
+        "registro_id": 12,
+        "fecha": "2026-05-25 17:44:25",
+        "ip": "::1",
+        "id": 36,
+        "created_at": "2026-05-25 17:44:25"
+    },
+    {
+        "usuario": "Administrador Sistema",
+        "accion": "APPROVE_PRESTAMO",
+        "tabla": "prestamos",
+        "registro_id": "12",
+        "fecha": "2026-05-25 17:45:52",
+        "ip": "::1",
+        "id": 37,
+        "created_at": "2026-05-25 17:45:52"
     }
 ]
