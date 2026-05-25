@@ -34,6 +34,17 @@ if (file_exists(ROOT_PATH . '/.env')) {
     }
 }
 
+// Compute BASE_URL dynamically to support different local and server paths.
+if (!empty($_SERVER['HTTP_HOST']) && !empty($_SERVER['SCRIPT_NAME'])) {
+    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    $scriptPath = dirname(str_replace('\\', '/', $_SERVER['SCRIPT_NAME']));
+    if ($scriptPath === '/' || $scriptPath === '\\') {
+        $scriptPath = '';
+    }
+    $_ENV['BASE_URL'] = rtrim($scheme . '://' . $host . $scriptPath, '/');
+}
+
 // Load Routes
 $router = require_once ROOT_PATH . '/routes/web.php';
 
