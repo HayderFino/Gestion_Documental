@@ -26,7 +26,6 @@ class AuditoriaController extends Controller {
                         <th>Usuario</th>
                         <th>Acción</th>
                         <th>Tabla/Módulo</th>
-                        <th>Dirección IP</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,7 +35,6 @@ class AuditoriaController extends Controller {
                         <td><strong><?= $log['usuario'] ?></strong></td>
                         <td><span class="badge badge-info" style="background: #e1e8ed; color: var(--primary-dark);"><?= $log['accion'] ?></span></td>
                         <td><?= $log['tabla'] ?></td>
-                        <td><code><?= $log['ip'] ?></code></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
