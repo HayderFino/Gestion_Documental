@@ -249,10 +249,20 @@
         "linea_expediente": "Residuos e Infraestructura",
         "motivo_consulta": "Auto Liquidaci\u00f3n",
         "observaciones": "ninguna",
-        "estado": "entregado",
+        "estado": "devuelto",
         "id": 12,
         "created_at": "2026-05-25 17:44:25",
         "fecha_prestamo": "2026-05-25 17:45:52",
-        "admin_aprueba": "Administrador Sistema"
+        "admin_aprueba": "Administrador Sistema",
+        "datos_entrega": {
+            "fecha_devolucion": "2026-05-26",
+            "tramite_realizado": "Concepto Liquidaci\u00f3n",
+            "numero_acto": "dfg",
+            "tomos_entregados": "1",
+            "folios_recibidos": "456",
+            "folios_anexos": "0546",
+            "estado_fisico": "regular",
+            "observaciones_devolucion": "566"
+        }
     }
 ]

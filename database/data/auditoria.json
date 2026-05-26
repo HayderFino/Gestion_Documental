@@ -371,5 +371,15 @@
         "ip": "::1",
         "id": 37,
         "created_at": "2026-05-25 17:45:52"
+    },
+    {
+        "usuario": "Administrador Sistema",
+        "accion": "RETURN_EXPEDIENTE",
+        "tabla": "devoluciones",
+        "registro_id": "12",
+        "fecha": "2026-05-26 22:04:54",
+        "ip": "::1",
+        "id": 38,
+        "created_at": "2026-05-26 22:04:54"
     }
 ]
