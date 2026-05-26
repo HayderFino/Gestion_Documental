@@ -12,7 +12,7 @@
         "id": 2,
         "usuario": "jpererz",
         "password": "123",
-        "nombre_completo": "Juan P\u00e9rez",
+        "nombre_completo": "Juan Pérez",
         "email": "jperez@cas.gov.co",
         "rol_nombre": "Usuario",
         "estado": "activo"

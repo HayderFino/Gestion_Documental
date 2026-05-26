@@ -44,7 +44,7 @@
     {
         "expediente_id": "2",
         "numero_expediente": "EXP-2024-002",
-        "solicitante_nombre": "Juan P\u00e9rez",
+        "solicitante_nombre": "Juan Pérez",
         "usuario_solicitante_id": 2,
         "fecha_solicitud": "2026-05-12",
         "tipo_vinculacion": "Funcionario",
@@ -60,7 +60,7 @@
     {
         "expediente_id": "2",
         "numero_expediente": "EXP-2024-002",
-        "solicitante_nombre": "Juan P\u00e9rez",
+        "solicitante_nombre": "Juan Pérez",
         "usuario_solicitante_id": 2,
         "fecha_solicitud": "2026-05-12",
         "tipo_vinculacion": "Funcionario",
@@ -86,7 +86,7 @@
     {
         "expediente_id": "1",
         "numero_expediente": "EXP-2024-001",
-        "solicitante_nombre": "Juan P\u00e9rez",
+        "solicitante_nombre": "Juan Pérez",
         "usuario_solicitante_id": 2,
         "fecha_solicitud": "2026-05-12",
         "tipo_vinculacion": "Funcionario",
@@ -112,7 +112,7 @@
     {
         "expediente_id": "1",
         "numero_expediente": "EXP-2024-001",
-        "solicitante_nombre": "Juan P\u00e9rez",
+        "solicitante_nombre": "Juan Pérez",
         "usuario_solicitante_id": 2,
         "fecha_solicitud": "2026-05-12",
         "tipo_vinculacion": "Funcionario",
@@ -126,7 +126,7 @@
         "admin_aprueba": "Administrador Sistema",
         "datos_entrega": {
             "fecha_devolucion": "2026-05-12",
-            "tramite_realizado": "Concepto T\u00e9cnico Queja",
+            "tramite_realizado": "Concepto Técnico Queja",
             "numero_acto": "aa",
             "tomos_entregados": "1",
             "folios_recibidos": "2",
@@ -138,12 +138,12 @@
     {
         "expediente_id": "1",
         "numero_expediente": "EXP-2024-001",
-        "solicitante_nombre": "Juan P\u00e9rez",
+        "solicitante_nombre": "Juan Pérez",
         "usuario_solicitante_id": 2,
         "fecha_solicitud": "2026-05-12",
         "tipo_vinculacion": "Contratista",
         "linea_expediente": "Recurso H\u00eddrico",
-        "motivo_consulta": "Concepto t\u00e9cnico Visita",
+        "motivo_consulta": "Concepto técnico Visita",
         "observaciones": "dsa",
         "estado": "devuelto",
         "id": 8,
@@ -164,7 +164,7 @@
     {
         "expediente_id": "4",
         "numero_expediente": "68081-0578-2002",
-        "solicitante_nombre": "Juan P\u00e9rez",
+        "solicitante_nombre": "Juan Pérez",
         "usuario_solicitante_id": 2,
         "fecha_solicitud": "2026-05-13",
         "tipo_vinculacion": "Contratista",
@@ -190,7 +190,7 @@
     {
         "expediente_id": "4",
         "numero_expediente": "68081-0578-2002",
-        "solicitante_nombre": "Juan P\u00e9rez",
+        "solicitante_nombre": "Juan Pérez",
         "usuario_solicitante_id": 2,
         "fecha_solicitud": "2026-05-13",
         "tipo_vinculacion": "Funcionario",
@@ -216,7 +216,7 @@
     {
         "expediente_id": "4",
         "numero_expediente": "68081-0578-2002",
-        "solicitante_nombre": "Juan P\u00e9rez",
+        "solicitante_nombre": "Juan Pérez",
         "usuario_solicitante_id": 2,
         "fecha_solicitud": "2026-05-13",
         "tipo_vinculacion": "Contratista",
@@ -242,7 +242,7 @@
     {
         "expediente_id": "1",
         "numero_expediente": "CARPETA BIOSOLIDOS 0001-2021",
-        "solicitante_nombre": "Juan P\u00e9rez",
+        "solicitante_nombre": "Juan Pérez",
         "usuario_solicitante_id": 2,
         "fecha_solicitud": "2026-05-25",
         "tipo_vinculacion": "Funcionario",

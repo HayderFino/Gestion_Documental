@@ -20,7 +20,7 @@
         "numero_expediente": "CARPETA BIOSOLIDOS 0001-2021",
         "interesado": "EMPRESA DE ASEO DE SANTANDER S.A. E.S.P.",
         "municipio": "LOS SANTOS",
-        "detalle_estado": "JUAN P\u00e9REZ (25\/05\/2026)"
+        "detalle_estado": "JUAN PÉREZ (25\/05\/2026)"
     },
     {
         "id": 2,
@@ -41,7 +41,7 @@
         "ubicacion_fisica": "H3-B",
         "expediente_cita": "210.10.00135-2022",
         "numero_expediente": "210.10.00135-2022",
-        "interesado": "ORGANIZACI\u00d3N TERPEL S.A. - SEBASTOPOL",
+        "interesado": "ORGANIZACIÓN TERPEL S.A. - SEBASTOPOL",
         "municipio": "CIMITARRA"
     },
     {
@@ -70,7 +70,7 @@
         "id": 4,
         "no_orden": "10",
         "codigo": "6000",
-        "titulo": "C.A SUBTERR\u00c1NEA",
+        "titulo": "C.A SUBTERRÁNEA",
         "fecha_inicial": "",
         "fecha_final": "",
         "caja": "",
@@ -89,6 +89,6 @@
         "municipio": "CIMITARRA",
         "numero_tomos": "1",
         "foliacion_total": "370",
-        "detalle_estado": "JUAN P\u00e9REZ (13\/05\/2026)"
+        "detalle_estado": "JUAN PéREZ (13\/05\/2026)"
     }
 ]
