@@ -158,6 +158,32 @@ h1, h2, h3, h4, h5 {
     transition: var(--transition);
 }
 
+.stat-card-link,
+.stat-card-link:link,
+.stat-card-link:visited,
+.stat-card-link:hover,
+.stat-card-link:focus,
+.stat-card-link:active,
+.stat-card-link *,
+.stat-card-link *:link,
+.stat-card-link *:visited,
+.stat-card-link *:hover,
+.stat-card-link *:focus,
+.stat-card-link *:active {
+    color: inherit !important;
+    text-decoration: none !important;
+    border-bottom: none !important;
+}
+
+.stat-card-link {
+    display: block;
+}
+
+.stat-card-link:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 4px;
+}
+
 .stat-card:hover {
     transform: translateY(-5px);
     box-shadow: var(--shadow-lg);

@@ -46,35 +46,39 @@ class DashboardController extends Controller {
             ];
         }
 
+        $targetActivos = ($role === 'Administrador') ? '#dashboard-activos' : '#dashboard-mis-expedientes';
+        $targetSolicitudes = ($role === 'Administrador') ? '#dashboard-solicitudes' : '#dashboard-mis-expedientes';
+        $targetDevoluciones = ($role === 'Administrador') ? '#dashboard-devoluciones' : '#dashboard-mis-expedientes';
+
         ob_start();
         ?>
         <div class="stats-grid">
-            <div class="stat-card">
+            <a href="<?= $targetActivos ?>" class="stat-card stat-card-link">
                 <div class="label">Total Expedientes</div>
                 <div class="value"><?= number_format($stats['total_expedientes']) ?></div>
                 <i class="fas fa-file-archive" style="color: var(--primary-color);"></i>
-            </div>
-            <div class="stat-card" style="border-left-color: var(--info-color);">
+            </a>
+            <a href="<?= $targetActivos ?>" class="stat-card stat-card-link" style="border-left-color: var(--info-color);">
                 <div class="label">Préstamos Activos</div>
                 <div class="value"><?= $stats['prestamos_activos'] ?></div>
                 <i class="fas fa-hand-holding" style="color: var(--info-color);"></i>
-            </div>
-            <div class="stat-card" style="border-left-color: var(--warning-color);">
+            </a>
+            <a href="<?= $targetSolicitudes ?>" class="stat-card stat-card-link" style="border-left-color: var(--warning-color);">
                 <div class="label">Solicitudes Pendientes</div>
                 <div class="value"><?= $stats['solicitudes_pendientes'] ?></div>
                 <i class="fas fa-clock" style="color: var(--warning-color);"></i>
-            </div>
-            <div class="stat-card" style="border-left-color: var(--success-color);">
+            </a>
+            <a href="<?= $targetDevoluciones ?>" class="stat-card stat-card-link" style="border-left-color: var(--success-color);">
                 <div class="label">Devoluciones x Confirmar</div>
                 <div class="value"><?= $stats['devoluciones_pendientes'] ?></div>
                 <i class="fas fa-undo" style="color: var(--success-color);"></i>
-            </div>
+            </a>
         </div>
 
         <?php if ($role === 'Administrador'): ?>
             <div class="dashboard-sections" style="display: flex; flex-direction: column; gap: 2rem; margin-top: 2rem;">
                 <!-- Solicitudes Pendientes -->
-                <div class="table-container">
+                <div id="dashboard-solicitudes" tabindex="-1" class="table-container">
                     <h3 style="margin-bottom: 1rem;"><i class="fas fa-bell"></i> Solicitudes por Aprobar</h3>
                     <table>
                         <thead>
@@ -106,7 +110,7 @@ class DashboardController extends Controller {
                 </div>
 
                 <!-- Devoluciones por Verificar -->
-                <div class="table-container">
+                <div id="dashboard-devoluciones" tabindex="-1" class="table-container">
                     <h3 style="margin-bottom: 1rem;"><i class="fas fa-file-signature"></i> Verificar Devoluciones</h3>
                     <table>
                         <thead>
@@ -138,7 +142,7 @@ class DashboardController extends Controller {
                 </div>
 
                 <!-- Quién tiene qué -->
-                <div class="table-container">
+                <div id="dashboard-activos" tabindex="-1" class="table-container">
                     <h3 style="margin-bottom: 1rem;"><i class="fas fa-map-marker-alt"></i> Ubicación de Expedientes</h3>
                     <table>
                         <thead>
@@ -175,7 +179,7 @@ class DashboardController extends Controller {
             </div>
         <?php else: ?>
             <!-- Vista para Usuario -->
-            <div class="table-container" style="margin-top: 2rem;">
+            <div id="dashboard-mis-expedientes" tabindex="-1" class="table-container" style="margin-top: 2rem;">
                 <h3 style="margin-bottom: 1rem;"><i class="fas fa-book-reader"></i> Mis Expedientes Actuales</h3>
                 <table>
                     <thead>
@@ -216,6 +220,20 @@ class DashboardController extends Controller {
                 </table>
             </div>
         <?php endif; ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.stat-card-link').forEach(function(card) {
+                    card.addEventListener('click', function(event) {
+                        var target = document.querySelector(this.getAttribute('href'));
+                        if (target) {
+                            event.preventDefault();
+                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            target.focus({ preventScroll: true });
+                        }
+                    });
+                });
+            });
+        </script>
         <?php
         $content = ob_get_clean();
         
