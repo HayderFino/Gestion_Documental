@@ -214,7 +214,6 @@ class PrestamoController extends Controller {
                     <div class="form-group">
                         <label>2. Nombre Completo Solicitante *</label>
                         <input type="text" class="form-control" value="<?= $_SESSION['user_name'] ?>" readonly>
-                        <input type="hidden" name="usuario_solicitante_id" value="<?= $_SESSION['user_id'] ?>">
                     </div>
 
                     <div class="form-group">

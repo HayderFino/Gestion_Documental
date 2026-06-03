@@ -142,9 +142,9 @@ class ExpedienteController extends Controller
                                     <?php endif; ?>
 
                                     <?php if ($role !== 'Administrador' && $role !== 'Jefe de Línea'): ?>
-                                        <button class="btn btn-secondary" style="padding: 4px 8px;" disabled title="Solo lectura">
+                                        <a href="<?= $_ENV['BASE_URL'] ?>/expedientes/ver/<?= $exp['id'] ?>" class="btn btn-secondary" style="padding: 4px 8px;" title="Ver expediente">
                                             <i class="fas fa-eye"></i>
-                                        </button>
+                                        </a>
                                     <?php endif; ?>
                                 </div>
                             </td>
@@ -157,6 +157,72 @@ class ExpedienteController extends Controller
                     <?php endif; ?>
                 </tbody>
             </table>
+        </div>
+        <?php
+        $content = ob_get_clean();
+
+        $this->render('layouts/main', compact('title', 'active', 'content'));
+    }
+
+    public function ver($id)
+    {
+        $title = "Ver Expediente";
+        $active = "expedientes";
+
+        $db = new \app\helpers\JsonDB('expedientes');
+        $exp = $db->find($id);
+
+        if (!$exp) {
+            $this->redirect('/expedientes');
+        }
+
+        $asignacionesDb = new \app\helpers\JsonDB('asignaciones');
+        $asignaciones = $asignacionesDb->where('expediente_id', $id);
+
+        if ($_SESSION['user_role'] !== 'Administrador' && $_SESSION['user_role'] !== 'Jefe de Línea') {
+            $allowed = false;
+            foreach ($asignaciones as $asig) {
+                if ($asig['usuario_id'] == $_SESSION['user_id']) {
+                    $allowed = true;
+                    break;
+                }
+            }
+            if (!$allowed) {
+                $this->redirect('/expedientes');
+            }
+        }
+
+        $usuariosDb = new \app\helpers\JsonDB('usuarios');
+        $allUsuarios = $usuariosDb->all();
+        $usuariosMap = [];
+        foreach ($allUsuarios as $u) {
+            $usuariosMap[$u['id']] = $u['nombre_completo'];
+        }
+
+        $usuariosAsignados = [];
+        foreach ($asignaciones as $asig) {
+            if (isset($usuariosMap[$asig['usuario_id']])) {
+                $usuariosAsignados[] = $usuariosMap[$asig['usuario_id']];
+            }
+        }
+
+        ob_start();
+        ?>
+        <div class="table-container" style="max-width: 900px; margin: 0 auto; padding: 2rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Detalle de Expediente</h3>
+            <div class="detail-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div><strong>Expediente:</strong> <?= htmlspecialchars($exp['numero_expediente'] ?? 'N/A') ?></div>
+                <div><strong>Asunto / Serie:</strong> <?= htmlspecialchars($exp['titulo'] ?? '') ?></div>
+                <div><strong>Ubicación Física:</strong> <?= htmlspecialchars($exp['ubicacion_fisica'] ?? 'N/A') ?></div>
+                <div><strong>Código:</strong> <?= htmlspecialchars($exp['codigo'] ?? 'N/A') ?></div>
+                <div><strong>Estado:</strong> <?= htmlspecialchars($exp['estado'] ?? 'Disponible') ?></div>
+                <div><strong>N° Orden:</strong> <?= htmlspecialchars($exp['no_orden'] ?? 'N/A') ?></div>
+                <div><strong>Descripción:</strong> <?= nl2br(htmlspecialchars($exp['descripcion'] ?? 'Sin descripción')) ?></div>
+                <div><strong>Asignados:</strong> <?= !empty($usuariosAsignados) ? htmlspecialchars(implode(', ', $usuariosAsignados)) : '<span style="color:#6b7280;">Sin asignar</span>' ?></div>
+            </div>
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end; gap: 1rem;">
+                <a href="<?= $_ENV['BASE_URL'] ?>/expedientes" class="btn btn-secondary">Regresar</a>
+            </div>
         </div>
         <?php
         $content = ob_get_clean();
@@ -522,16 +588,20 @@ class ExpedienteController extends Controller
                             No hay usuarios activos registrados en el sistema con el rol "Usuario".
                         </div>
                     <?php else: ?>
-                        <input type="text" id="user-search" placeholder="Buscar usuario por nombre, correo o usuario..." class="form-control" style="width:100%; margin-bottom:0.75rem; padding:0.5rem;">
+                        <input type="text" id="user-search" placeholder="Buscar por nombre, documento, correo o usuario..." class="form-control" style="width:100%; margin-bottom:0.75rem; padding:0.5rem;">
                         <div id="users-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
                             <?php foreach ($usuarios as $u): ?>
-                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px; border-radius: var(--radius-sm); transition: var(--transition);" class="checkbox-label">
+                                <?php $documento = trim($u['numero_documento'] ?? ''); ?>
+                                <label data-search="<?= htmlspecialchars($u['nombre_completo'] . ' ' . $u['email'] . ' ' . $u['usuario'] . ' ' . $documento) ?>" style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px; border-radius: var(--radius-sm); transition: var(--transition);" class="checkbox-label">
                                     <input type="checkbox" name="usuarios[]" value="<?= $u['id'] ?>" 
                                         <?= in_array($u['id'], $usuariosAsignadosIds) ? 'checked' : '' ?>
                                         style="width: 18px; height: 18px; cursor: pointer;">
                                     <div>
-                                        <strong style="display: block;"><?= htmlspecialchars($u['nombre_completo']) ?> <span style="font-weight:600; color:#6b7280; font-size:0.85rem;">(<?= htmlspecialchars($u['numero_documento'] ?? '') ?>)</span></strong>
-                                        <span style="font-size: 0.85rem; color: var(--text-muted);"><?= htmlspecialchars($u['email']) ?> (<?= htmlspecialchars($u['usuario']) ?>)</span>
+                                        <strong style="display: block;"><?= htmlspecialchars($u['nombre_completo']) ?><?php if ($documento !== ''): ?> <span style="font-weight:600; color:#6b7280; font-size:0.85rem;">(<?= htmlspecialchars($documento) ?>)</span><?php endif; ?></strong>
+                                        <span style="font-size: 0.85rem; color: var(--text-muted); display: block;"><?= htmlspecialchars($u['email']) ?> (<?= htmlspecialchars($u['usuario']) ?>)</span>
+                                        <?php if ($documento !== ''): ?>
+                                            <span style="font-size: 0.82rem; color: #4a5568;">Documento: <?= htmlspecialchars($documento) ?></span>
+                                        <?php endif; ?>
                                     </div>
                                 </label>
                             <?php endforeach; ?>
@@ -549,7 +619,7 @@ class ExpedienteController extends Controller
                                     var q = input.value.toLowerCase().trim();
                                     var anyVisible = false;
                                     labels.forEach(function(lbl){
-                                        var text = lbl.textContent.toLowerCase();
+                                        var text = lbl.dataset.search ? lbl.dataset.search.toLowerCase() : lbl.textContent.toLowerCase();
                                         var show = q === '' || text.indexOf(q) !== -1;
                                         lbl.style.display = show ? 'flex' : 'none';
                                         if (show) anyVisible = true;

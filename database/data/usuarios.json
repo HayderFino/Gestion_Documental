@@ -6,16 +6,19 @@
         "nombre_completo": "Administrador Sistema",
         "email": "admin@cas.gov.co",
         "rol_nombre": "Administrador",
-        "estado": "activo"
+        "estado": "activo",
+        "numero_documento": "1000000"
     },
     {
         "id": 2,
         "usuario": "jpererz",
         "password": "123",
-        "nombre_completo": "Juan Pérez",
+        "nombre_completo": "Juan P\u00e9rez",
         "email": "jperez@cas.gov.co",
         "rol_nombre": "Usuario",
-        "estado": "activo"
+        "estado": "activo",
+        "numero_documento": "123"
+
     },
     {
         "id": 3,
@@ -35,7 +38,7 @@
         "rol_nombre": "Usuario",
         "estado": "activo"
     },
-    {   
+    {
         "usuario": "carlos",
         "password": "123",
         "nombre_completo": "carlos - fuid 2026",

@@ -29,5 +29,37 @@
         "ip": "::1",
         "id": 3,
         "created_at": "2026-06-03 16:59:50"
+    },
+    {
+        "usuario": "Administrador Sistema",
+        "accion": "RETURN_EXPEDIENTE",
+        "tabla": "devoluciones",
+        "registro_id": "1",
+        "fecha": "2026-06-03 20:46:33",
+        "ip": "::1",
+        "id": 4,
+        "created_at": "2026-06-03 20:46:33"
+    },
+    {
+        "usuario": "Administrador Sistema",
+        "accion": "UPDATE_USER",
+        "tabla": "usuarios",
+        "registro_id": 1,
+        "fecha": "2026-06-03 21:07:00",
+        "ip": "::1",
+        "detalles": "Usuario modificado: admin. Rol: Administrador, Estado: activo",
+        "id": 5,
+        "created_at": "2026-06-03 21:07:00"
+    },
+    {
+        "usuario": "Administrador Sistema",
+        "accion": "ASSIGN_EXPEDIENTE",
+        "tabla": "asignaciones",
+        "registro_id": 1,
+        "fecha": "2026-06-03 21:09:34",
+        "ip": "::1",
+        "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Juan P\u00e9rez",
+        "id": 6,
+        "created_at": "2026-06-03 21:09:34"
     }
 ]

@@ -24,6 +24,7 @@ $router->add('GET', '/expedientes/editar/{id}', [ExpedienteController::class, 'e
 $router->add('POST', '/expedientes/actualizar/{id}', [ExpedienteController::class, 'update']);
 $router->add('GET', '/expedientes/asignar/{id}', [ExpedienteController::class, 'asignar']);
 $router->add('POST', '/expedientes/asignar/{id}', [ExpedienteController::class, 'guardarAsignacion']);
+$router->add('GET', '/expedientes/ver/{id}', [ExpedienteController::class, 'ver']);
 
 // Préstamos
 $router->add('GET', '/prestamos', [\app\controllers\PrestamoController::class, 'index']);
