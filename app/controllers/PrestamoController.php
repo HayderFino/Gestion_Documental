@@ -123,6 +123,9 @@ class PrestamoController extends Controller {
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
+    /**
+     * @param int $id
+     */
     public function verSolicitud($id) {
         if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
         
@@ -189,8 +192,17 @@ class PrestamoController extends Controller {
         ];
 
         ob_start();
+        if (isset($_SESSION['prestamo_error'])) {
+            $errorMsg = $_SESSION['prestamo_error'];
+            unset($_SESSION['prestamo_error']);
+        }
         ?>
         <div class="table-container" style="max-width: 900px; margin: 0 auto;">
+            <?php if (!empty($errorMsg)): ?>
+                <div class="badge badge-danger" style="margin-bottom: 1rem; display: block; padding: 10px; border-radius: var(--radius-md); background:#f8d7da; color:#721c24;">
+                    <?= htmlspecialchars($errorMsg) ?>
+                </div>
+            <?php endif; ?>
             <form action="<?= $_ENV['BASE_URL'] ?>/prestamos/guardar" method="POST">
                 <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     
@@ -273,12 +285,20 @@ class PrestamoController extends Controller {
         $expedienteId = $_POST['expediente_id'];
         $expediente = $expedienteDb->find($expedienteId);
 
+        // Validaciones
+        $fecha_solicitud = $_POST['fecha_solicitud'] ?? '';
+        $today = date('Y-m-d');
+        if (strtotime($fecha_solicitud) < strtotime($today)) {
+            $_SESSION['prestamo_error'] = 'La fecha de solicitud no puede ser anterior a la fecha actual.';
+            $this->redirect('/prestamos/solicitar');
+        }
+
         $data = [
             'expediente_id' => $expedienteId,
             'numero_expediente' => $expediente['numero_expediente'],
             'solicitante_nombre' => $_SESSION['user_name'],
             'usuario_solicitante_id' => $_SESSION['user_id'],
-            'fecha_solicitud' => $_POST['fecha_solicitud'],
+            'fecha_solicitud' => $fecha_solicitud,
             'tipo_vinculacion' => $_POST['tipo_vinculacion'],
             'linea_expediente' => $_POST['linea_expediente'],
             'motivo_consulta' => $_POST['motivo_consulta'],
@@ -301,6 +321,9 @@ class PrestamoController extends Controller {
         $this->redirect('/prestamos');
     }
 
+    /**
+     * @param int $id
+     */
     public function aprobarPrestamo($id) {
         if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
 
@@ -334,6 +357,9 @@ class PrestamoController extends Controller {
         $this->redirect('/prestamos');
     }
 
+    /**
+     * @param int $id
+     */
     public function entregar($id) {
         if ($_SESSION['user_role'] !== 'Usuario') $this->redirect('/prestamos');
 
@@ -354,8 +380,17 @@ class PrestamoController extends Controller {
         ];
 
         ob_start();
+        if (isset($_SESSION['prestamo_error'])) {
+            $errorMsg = $_SESSION['prestamo_error'];
+            unset($_SESSION['prestamo_error']);
+        }
         ?>
         <div class="table-container" style="max-width: 900px; margin: 0 auto;">
+            <?php if (!empty($errorMsg)): ?>
+                <div class="badge badge-danger" style="margin-bottom: 1rem; display: block; padding: 10px; border-radius: var(--radius-md); background:#f8d7da; color:#721c24;">
+                    <?= htmlspecialchars($errorMsg) ?>
+                </div>
+            <?php endif; ?>
             <div style="margin-bottom: 2rem; border-bottom: 2px solid #eee; padding-bottom: 1rem;">
                 <h3 style="color: var(--primary-dark);">Diligenciar Información de Entrega</h3>
                 <p>Expediente: <strong><?= $p['numero_expediente'] ?></strong></p>
@@ -365,16 +400,23 @@ class PrestamoController extends Controller {
                 <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                     
                     <div class="form-group">
-                        <label>1. Fecha Devolución *</label>
-                        <input type="date" name="fecha_devolucion" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                        <label>1. Fecha (No editable)</label>
+                        <input type="date" name="fecha_solicitada" class="form-control" value="<?= date('Y-m-d') ?>" readonly style="background:#f5f7fa; cursor:not-allowed;">
                     </div>
 
                     <div class="form-group">
                         <label>2. Trámite Realizado *</label>
                         <select name="tramite_realizado" class="form-control" required>
                             <option value="">-- Seleccione el trámite --</option>
+                            <?php
+                                // Preseleccionar el motivo de consulta si coincide o incluirlo
+                                $preMotivo = $p['motivo_consulta'] ?? '';
+                                if ($preMotivo && !in_array($preMotivo, $tramites)) {
+                                    echo "<option value=\"" . htmlspecialchars($preMotivo) . "\" selected>" . htmlspecialchars($preMotivo) . "</option>";
+                                }
+                            ?>
                             <?php foreach ($tramites as $t): ?>
-                                <option value="<?= $t ?>"><?= $t ?></option>
+                                <option value="<?= $t ?>" <?= ($t === ($p['motivo_consulta'] ?? '')) ? 'selected' : '' ?>><?= $t ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -425,6 +467,9 @@ class PrestamoController extends Controller {
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
+    /**
+     * @param int $id
+     */
     public function procesarEntrega($id) {
         if ($_SESSION['user_role'] !== 'Usuario') $this->redirect('/prestamos');
 
@@ -435,15 +480,32 @@ class PrestamoController extends Controller {
             $this->redirect('/prestamos');
         }
 
+        // Validar campos numéricos y fecha
+        $tomos_entregados = $_POST['tomos_entregados'] ?? '';
+        $folios_recibidos = $_POST['folios_recibidos'] ?? '';
+        $folios_anexos = $_POST['folios_anexos'] ?? '';
+
+        if (!is_numeric($tomos_entregados) || intval($tomos_entregados) < 1) {
+            $_SESSION['prestamo_error'] = 'El campo "Tomos Entregados" debe ser un número entero mayor o igual a 1.';
+            $this->redirect('/prestamos/entregar/' . $id);
+        }
+        if (!is_numeric($folios_recibidos) || intval($folios_recibidos) < 1) {
+            $_SESSION['prestamo_error'] = 'El campo "Nº de folios finales" debe ser un número entero mayor o igual a 1.';
+            $this->redirect('/prestamos/entregar/' . $id);
+        }
+        if (!is_numeric($folios_anexos) || intval($folios_anexos) < 0) {
+            $_SESSION['prestamo_error'] = 'El campo "Folios Anexos" debe ser un número entero mayor o igual a 0.';
+            $this->redirect('/prestamos/entregar/' . $id);
+        }
+
         $data = [
             'estado' => 'pendiente_devolucion',
             'datos_entrega' => [
-                'fecha_devolucion' => $_POST['fecha_devolucion'],
                 'tramite_realizado' => $_POST['tramite_realizado'],
                 'numero_acto' => $_POST['numero_acto'],
-                'tomos_entregados' => $_POST['tomos_entregados'],
-                'folios_recibidos' => $_POST['folios_recibidos'],
-                'folios_anexos' => $_POST['folios_anexos'],
+                'tomos_entregados' => intval($tomos_entregados),
+                'folios_recibidos' => intval($folios_recibidos),
+                'folios_anexos' => intval($folios_anexos),
                 'estado_fisico' => $_POST['estado_fisico'],
                 'observaciones_devolucion' => $_POST['observaciones_devolucion']
             ]
@@ -453,6 +515,9 @@ class PrestamoController extends Controller {
         $this->redirect('/prestamos');
     }
 
+    /**
+     * @param int $id
+     */
     public function devolver($id) {
         if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
 
@@ -481,7 +546,7 @@ class PrestamoController extends Controller {
             <?php endif; ?>
 
             <div class="detail-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; background: #f9f9f9; padding: 1.5rem; border-radius: 8px;">
-                <div><strong>Fecha Devolución:</strong> <?= $d['fecha_devolucion'] ?? date('Y-m-d') ?></div>
+                <div><strong>Fecha Devolución:</strong> <?= $d['fecha_devolucion'] ?? 'Pendiente' ?></div>
                 <div><strong>Trámite Realizado:</strong> <?= $d['tramite_realizado'] ?? 'No especificado' ?></div>
                 <div><strong>Actos/Memorandos:</strong> <?= $d['numero_acto'] ?? 'N/A' ?></div>
                 <div><strong>Tomos:</strong> <?= $d['tomos_entregados'] ?? 1 ?></div>
@@ -493,7 +558,7 @@ class PrestamoController extends Controller {
 
             <form id="form-verificacion" action="<?= $_ENV['BASE_URL'] ?>/prestamos/procesar-devolucion/<?= $id ?>" method="POST">
                 <!-- Campos ocultos para mantener los datos verificados -->
-                <input type="hidden" name="fecha_devolucion" value="<?= $d['fecha_devolucion'] ?? date('Y-m-d') ?>">
+                <!-- fecha_devolucion se asigna al procesar la devolución en archivo -->
                 <input type="hidden" name="tramite_realizado" value="<?= $d['tramite_realizado'] ?? 'No especificado' ?>">
                 <input type="hidden" name="numero_acto" value="<?= $d['numero_acto'] ?? 'N/A' ?>">
                 <input type="hidden" name="tomos_entregados" value="<?= $d['tomos_entregados'] ?? 1 ?>">
@@ -542,6 +607,9 @@ class PrestamoController extends Controller {
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
+    /**
+     * @param int $id
+     */
     public function procesarDevolucion($id) {
         if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
 
@@ -553,17 +621,20 @@ class PrestamoController extends Controller {
         $p = $prestamoDb->find($id);
         if (!$p) $this->redirect('/prestamos');
 
+        // Forzar que el trámite de la devolución sea el mismo motivo de consulta original si existe
+        $tramite_final = $p['motivo_consulta'] ?? ($_POST['tramite_realizado'] ?? 'No especificado');
+
         $devolucionData = [
             'prestamo_id' => $id,
             'numero_expediente' => $p['numero_expediente'],
-            'fecha_devolucion' => $_POST['fecha_devolucion'],
+            'fecha_devolucion' => date('Y-m-d'),
             'nombre_devuelve' => $p['solicitante_nombre'],
             'tipo_vinculacion' => $p['tipo_vinculacion'],
-            'tramite_realizado' => $_POST['tramite_realizado'],
+            'tramite_realizado' => $tramite_final,
             'numero_acto' => $_POST['numero_acto'],
-            'tomos_entregados' => $_POST['tomos_entregados'],
-            'folios_recibidos' => $_POST['folios_recibidos'],
-            'folios_anexos' => $_POST['folios_anexos'],
+            'tomos_entregados' => intval($_POST['tomos_entregados'] ?? 0),
+            'folios_recibidos' => intval($_POST['folios_recibidos'] ?? 0),
+            'folios_anexos' => intval($_POST['folios_anexos'] ?? 0),
             'estado_fisico' => $_POST['estado_fisico'],
             'usuario_recibe_archivo' => $_SESSION['user_name'],
             'observaciones' => $_POST['observaciones_devolucion']
@@ -590,6 +661,9 @@ class PrestamoController extends Controller {
         $this->redirect('/prestamos');
     }
 
+    /**
+     * @param int $id
+     */
     public function rechazarDevolucion($id) {
         if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
 

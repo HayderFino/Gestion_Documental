@@ -35,7 +35,7 @@
         "rol_nombre": "Usuario",
         "estado": "activo"
     },
-    {
+    {   
         "usuario": "carlos",
         "password": "123",
         "nombre_completo": "carlos - fuid 2026",

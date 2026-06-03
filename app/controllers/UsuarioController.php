@@ -32,6 +32,7 @@ class UsuarioController extends Controller {
                 <thead>
                     <tr>
                         <th>Usuario</th>
+                        <th>Documento</th>
                         <th>Nombre Completo</th>
                         <th>Email</th>
                         <th>Rol</th>
@@ -43,6 +44,7 @@ class UsuarioController extends Controller {
                     <?php foreach ($usuarios as $u): ?>
                     <tr>
                         <td><strong><?= htmlspecialchars($u['usuario']) ?></strong></td>
+                        <td><?= htmlspecialchars($u['numero_documento'] ?? '') ?></td>
                         <td><?= htmlspecialchars($u['nombre_completo']) ?></td>
                         <td><?= htmlspecialchars($u['email']) ?></td>
                         <td><?= htmlspecialchars($u['rol_nombre']) ?></td>
@@ -91,6 +93,10 @@ class UsuarioController extends Controller {
                         <input type="text" name="usuario" class="form-control" placeholder="ej: jgomez" required>
                     </div>
                     <div class="form-group">
+                        <label>Número de Documento</label>
+                        <input type="text" name="numero_documento" class="form-control" placeholder="ej: 12345678" required>
+                    </div>
+                    <div class="form-group">
                         <label>Nombre Completo</label>
                         <input type="text" name="nombre_completo" class="form-control" placeholder="ej: Jorge Gómez" required>
                     </div>
@@ -132,13 +138,14 @@ class UsuarioController extends Controller {
 
     public function store() {
         $usuario = trim($_POST['usuario'] ?? '');
+        $numero_documento = trim($_POST['numero_documento'] ?? '');
         $nombre_completo = trim($_POST['nombre_completo'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
         $rol_nombre = $_POST['rol_nombre'] ?? 'Usuario';
         $estado = $_POST['estado'] ?? 'activo';
 
-        if (empty($usuario) || empty($nombre_completo) || empty($email) || empty($password)) {
+        if (empty($usuario) || empty($numero_documento) || empty($nombre_completo) || empty($email) || empty($password)) {
             $_SESSION['user_error'] = "Todos los campos son obligatorios.";
             $this->redirect('/usuarios/crear');
         }
@@ -156,11 +163,16 @@ class UsuarioController extends Controller {
                 $_SESSION['user_error'] = "El correo electrónico '{$email}' ya se encuentra registrado.";
                 $this->redirect('/usuarios/crear');
             }
+            if (!empty($u['numero_documento']) && $u['numero_documento'] === $numero_documento) {
+                $_SESSION['user_error'] = "El número de documento '{$numero_documento}' ya se encuentra registrado.";
+                $this->redirect('/usuarios/crear');
+            }
         }
 
         $data = [
             'usuario' => $usuario,
             'password' => $password,
+            'numero_documento' => $numero_documento,
             'nombre_completo' => $nombre_completo,
             'email' => $email,
             'rol_nombre' => $rol_nombre,
@@ -184,6 +196,9 @@ class UsuarioController extends Controller {
         $this->redirect('/usuarios');
     }
 
+    /**
+     * @param int $id
+     */
     public function edit($id) {
         $title = "Editar Usuario";
         $active = "usuarios";
@@ -213,6 +228,10 @@ class UsuarioController extends Controller {
                     <div class="form-group">
                         <label>Nombre de Usuario (Login)</label>
                         <input type="text" name="usuario" class="form-control" value="<?= htmlspecialchars($u['usuario']) ?>" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Número de Documento</label>
+                        <input type="text" name="numero_documento" class="form-control" value="<?= htmlspecialchars($u['numero_documento'] ?? '') ?>" required>
                     </div>
                     <div class="form-group">
                         <label>Nombre Completo</label>
@@ -254,16 +273,20 @@ class UsuarioController extends Controller {
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
+    /**
+     * @param int $id
+     */
     public function update($id) {
         $usuario = trim($_POST['usuario'] ?? '');
+        $numero_documento = trim($_POST['numero_documento'] ?? '');
         $nombre_completo = trim($_POST['nombre_completo'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
         $rol_nombre = $_POST['rol_nombre'] ?? 'Usuario';
         $estado = $_POST['estado'] ?? 'activo';
 
-        if (empty($usuario) || empty($nombre_completo) || empty($email)) {
-            $_SESSION['user_error'] = "Los campos Usuario, Nombre Completo y Email son obligatorios.";
+        if (empty($usuario) || empty($numero_documento) || empty($nombre_completo) || empty($email)) {
+            $_SESSION['user_error'] = "Los campos Usuario, Número de Documento, Nombre Completo y Email son obligatorios.";
             $this->redirect("/usuarios/editar/{$id}");
         }
 
@@ -286,6 +309,10 @@ class UsuarioController extends Controller {
                 $_SESSION['user_error'] = "El correo electrónico '{$email}' ya se encuentra registrado.";
                 $this->redirect("/usuarios/editar/{$id}");
             }
+            if (!empty($other['numero_documento']) && $other['numero_documento'] === $numero_documento) {
+                $_SESSION['user_error'] = "El número de documento '{$numero_documento}' ya se encuentra registrado.";
+                $this->redirect("/usuarios/editar/{$id}");
+            }
         }
 
         // Si no se proporcionó contraseña, mantener la actual
@@ -294,6 +321,7 @@ class UsuarioController extends Controller {
         $data = [
             'usuario' => $usuario,
             'password' => $final_password,
+            'numero_documento' => $numero_documento,
             'nombre_completo' => $nombre_completo,
             'email' => $email,
             'rol_nombre' => $rol_nombre,

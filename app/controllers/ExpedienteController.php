@@ -249,6 +249,9 @@ class ExpedienteController extends Controller
         $this->redirect('/expedientes');
     }
 
+    /**
+     * @param int $id
+     */
     public function edit($id)
     {
         $this->checkAdmin();
@@ -418,6 +421,9 @@ class ExpedienteController extends Controller
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
+    /**
+     * @param int $id
+     */
     public function update($id)
     {
         $this->checkAdmin();
@@ -461,6 +467,9 @@ class ExpedienteController extends Controller
         $this->redirect('/expedientes');
     }
 
+    /**
+     * @param int $id
+     */
     public function asignar($id)
     {
         $role = $_SESSION['user_role'];
@@ -513,19 +522,44 @@ class ExpedienteController extends Controller
                             No hay usuarios activos registrados en el sistema con el rol "Usuario".
                         </div>
                     <?php else: ?>
-                        <div style="display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <input type="text" id="user-search" placeholder="Buscar usuario por nombre, correo o usuario..." class="form-control" style="width:100%; margin-bottom:0.75rem; padding:0.5rem;">
+                        <div id="users-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
                             <?php foreach ($usuarios as $u): ?>
                                 <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px; border-radius: var(--radius-sm); transition: var(--transition);" class="checkbox-label">
                                     <input type="checkbox" name="usuarios[]" value="<?= $u['id'] ?>" 
                                         <?= in_array($u['id'], $usuariosAsignadosIds) ? 'checked' : '' ?>
                                         style="width: 18px; height: 18px; cursor: pointer;">
                                     <div>
-                                        <strong style="display: block;"><?= htmlspecialchars($u['nombre_completo']) ?></strong>
+                                        <strong style="display: block;"><?= htmlspecialchars($u['nombre_completo']) ?> <span style="font-weight:600; color:#6b7280; font-size:0.85rem;">(<?= htmlspecialchars($u['numero_documento'] ?? '') ?>)</span></strong>
                                         <span style="font-size: 0.85rem; color: var(--text-muted);"><?= htmlspecialchars($u['email']) ?> (<?= htmlspecialchars($u['usuario']) ?>)</span>
                                     </div>
                                 </label>
                             <?php endforeach; ?>
                         </div>
+                        <div id="no-results" style="display:none; padding:1rem; color:var(--text-muted); text-align:center;">No se encontraron usuarios.</div>
+
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var input = document.getElementById('user-search');
+                                var list = document.getElementById('users-list');
+                                if (!input || !list) return;
+                                var labels = Array.prototype.slice.call(list.querySelectorAll('.checkbox-label'));
+
+                                function filter() {
+                                    var q = input.value.toLowerCase().trim();
+                                    var anyVisible = false;
+                                    labels.forEach(function(lbl){
+                                        var text = lbl.textContent.toLowerCase();
+                                        var show = q === '' || text.indexOf(q) !== -1;
+                                        lbl.style.display = show ? 'flex' : 'none';
+                                        if (show) anyVisible = true;
+                                    });
+                                    document.getElementById('no-results').style.display = anyVisible ? 'none' : 'block';
+                                }
+
+                                input.addEventListener('input', filter);
+                            });
+                        </script>
                     <?php endif; ?>
                 </div>
 
@@ -549,6 +583,9 @@ class ExpedienteController extends Controller
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
+    /**
+     * @param int $id
+     */
     public function guardarAsignacion($id)
     {
         $role = $_SESSION['user_role'];
