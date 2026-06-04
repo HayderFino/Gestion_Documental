@@ -15,6 +15,23 @@ session_start();
 define('ROOT_PATH', dirname(__DIR__));
 define('APP_PATH', ROOT_PATH . '/app');
 
+// Auto-copy favicon from database if missing in public/assets/favicon.png
+$faviconDest = ROOT_PATH . '/public/assets/favicon.png';
+if (!file_exists($faviconDest)) {
+    $faviconSource = ROOT_PATH . '/database/favicon_cas_1780588614112.png';
+    if (file_exists($faviconSource)) {
+        if (!is_dir(dirname($faviconDest))) {
+            @mkdir(dirname($faviconDest), 0755, true);
+        }
+        @copy($faviconSource, $faviconDest);
+    }
+}
+// Clean up temporary script if it exists
+$tempScript = ROOT_PATH . '/public/copy_favicon.php';
+if (file_exists($tempScript)) {
+    @unlink($tempScript);
+}
+
 // Autoloader (Simple PSR-4-like)
 spl_autoload_register(function ($class) {
     $class = str_replace('\\', '/', $class);
