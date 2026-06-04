@@ -61,5 +61,46 @@
         "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Juan P\u00e9rez",
         "id": 6,
         "created_at": "2026-06-03 21:09:34"
+    },
+    {
+        "usuario": "Administrador Sistema",
+        "accion": "ASSIGN_EXPEDIENTE",
+        "tabla": "asignaciones",
+        "registro_id": 1,
+        "fecha": "2026-06-04 17:09:51",
+        "ip": "::1",
+        "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Juan P\u00e9rez",
+        "id": 7,
+        "created_at": "2026-06-04 17:09:51"
+    },
+    {
+        "usuario": "Juan P\u00e9rez",
+        "accion": "REQUEST_PRESTAMO",
+        "tabla": "prestamos",
+        "registro_id": 2,
+        "fecha": "2026-06-04 17:10:50",
+        "ip": "::1",
+        "id": 8,
+        "created_at": "2026-06-04 17:10:50"
+    },
+    {
+        "usuario": "Administrador Sistema",
+        "accion": "APPROVE_PRESTAMO",
+        "tabla": "prestamos",
+        "registro_id": "2",
+        "fecha": "2026-06-04 17:11:02",
+        "ip": "::1",
+        "id": 9,
+        "created_at": "2026-06-04 17:11:02"
+    },
+    {
+        "usuario": "Administrador Sistema",
+        "accion": "RETURN_EXPEDIENTE",
+        "tabla": "devoluciones",
+        "registro_id": "2",
+        "fecha": "2026-06-04 17:11:40",
+        "ip": "::1",
+        "id": 10,
+        "created_at": "2026-06-04 17:11:40"
     }
 ]

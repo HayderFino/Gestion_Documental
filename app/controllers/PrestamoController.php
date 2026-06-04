@@ -42,13 +42,13 @@ class PrestamoController extends Controller {
 
         ob_start();
         ?>
-        <div class="top-actions" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <div class="top-actions">
             <div class="role-badge">
                 <span class="badge badge-primary">Rol: <?= $role ?></span>
             </div>
             <?php if ($role === 'Usuario'): ?>
             <a href="<?= $_ENV['BASE_URL'] ?>/prestamos/solicitar" class="btn btn-primary">
-                <i class="fas fa-handshake"></i> Solicitar Préstamo
+                <i class="fas fa-handshake"></i> <span class="btn-text">Solicitar Préstamo</span>
             </a>
             <?php endif; ?>
         </div>

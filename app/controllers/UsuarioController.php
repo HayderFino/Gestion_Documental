@@ -21,9 +21,9 @@ class UsuarioController extends Controller {
 
         ob_start();
         ?>
-        <div class="top-actions" style="margin-bottom: 1.5rem; display: flex; justify-content: flex-end;">
+        <div class="top-actions">
             <a href="<?= $_ENV['BASE_URL'] ?>/usuarios/crear" class="btn btn-primary">
-                <i class="fas fa-user-plus"></i> Nuevo Usuario
+                <i class="fas fa-user-plus"></i> <span class="btn-text">Nuevo Usuario</span>
             </a>
         </div>
 

@@ -73,16 +73,17 @@ class ExpedienteController extends Controller
 
         ob_start();
         ?>
-        <div class="top-actions" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between;">
+        <div class="top-actions">
             <div class="search-box">
-                <input type="text" placeholder="Buscar expediente..." class="form-control" style="width: 300px;">
+                <input type="text" placeholder="Buscar expediente..." class="form-control">
             </div>
             <?php if ($role === 'Administrador'): ?>
                 <a href="<?= $_ENV['BASE_URL'] ?>/expedientes/crear" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Nuevo Expediente
+                    <i class="fas fa-plus"></i> <span class="btn-text">Nuevo Expediente</span>
                 </a>
             <?php endif; ?>
         </div>
+
 
         <div class="table-container">
             <table>

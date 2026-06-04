@@ -12,12 +12,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
+            padding: 1rem;
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
         }
         .login-card {
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             padding: 3rem;
             border-radius: var(--radius-lg);
             text-align: center;
@@ -26,21 +27,16 @@
         .login-card h2 { margin-bottom: 2rem; color: var(--primary-dark); }
         .form-group { margin-bottom: 1.5rem; text-align: left; }
         .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-muted); }
-        .form-control {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            transition: var(--transition);
+        .login-btn { width: 100%; margin-top: 1rem; padding: 1rem; justify-content: center; }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 2rem 1.25rem;
+                border-radius: var(--radius-md);
+            }
         }
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(26, 79, 139, 0.1);
-        }
-        .login-btn { width: 100%; margin-top: 1rem; padding: 1rem; }
     </style>
+
 </head>
 <body>
     <div class="login-card glass">
