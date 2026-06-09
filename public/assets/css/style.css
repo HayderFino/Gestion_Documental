@@ -5,6 +5,12 @@
     --primary-dark: #0f2e52;
     --secondary-color: #6c757d;
     --accent-color: #f39c12;
+    /* Primary Color Palette (Institutional Green & Accents - CAS) */
+    /*--primary-color: #008f39;
+    /*--primary-light: #33a55b;
+    /*--primary-dark: #006629;
+    /*--secondary-color: #5a6268;
+    /*--accent-color: #ffc107;
 
     /* Semantic Colors */
     --success-color: #27ae60;
@@ -20,9 +26,9 @@
     --border-color: #e1e8ed;
 
     /* Effects */
-    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.3);
     --radius-sm: 4px;
@@ -40,18 +46,39 @@
    ANIMATIONS
    =========================== */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes slideInLeft {
-    from { transform: translateX(-20px); opacity: 0; }
-    to   { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 @keyframes slideInRight {
-    from { transform: translateX(100%); opacity: 0; }
-    to   { transform: translateX(0); opacity: 1; }
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 /* ===========================
@@ -72,7 +99,11 @@ body {
     animation: fadeIn 0.6s ease-out;
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
     color: var(--primary-dark);
     font-weight: 700;
 }
@@ -129,7 +160,7 @@ h1, h2, h3, h4, h5 {
     justify-content: space-between;
     margin-bottom: 2.5rem;
     padding-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(255,255,255,0.12);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .sidebar-brand {
@@ -157,7 +188,7 @@ h1, h2, h3, h4, h5 {
 /* Botón cerrar — solo visible en móvil */
 .sidebar-close {
     display: none;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     border: none;
     color: white;
     width: 36px;
@@ -170,7 +201,7 @@ h1, h2, h3, h4, h5 {
 }
 
 .sidebar-close:hover {
-    background: rgba(255,255,255,0.22);
+    background: rgba(255, 255, 255, 0.22);
 }
 
 .nav-menu {
@@ -185,13 +216,13 @@ h1, h2, h3, h4, h5 {
 .nav-item-logout {
     margin-top: 2rem;
     padding-top: 1rem;
-    border-top: 1px solid rgba(255,255,255,0.12);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .nav-link {
     display: flex;
     align-items: center;
-    color: rgba(255,255,255,0.72);
+    color: rgba(255, 255, 255, 0.72);
     text-decoration: none;
     padding: 0.8rem 1rem;
     border-radius: var(--radius-md);
@@ -202,7 +233,7 @@ h1, h2, h3, h4, h5 {
 
 .nav-link:hover,
 .nav-link.active {
-    background: rgba(255,255,255,0.12);
+    background: rgba(255, 255, 255, 0.12);
     color: white;
     transform: translateX(4px);
 }
@@ -256,10 +287,12 @@ h1, h2, h3, h4, h5 {
 .hamburger-btn.open .hamburger-line:nth-child(1) {
     transform: translateY(7px) rotate(45deg);
 }
+
 .hamburger-btn.open .hamburger-line:nth-child(2) {
     opacity: 0;
     transform: scaleX(0);
 }
+
 .hamburger-btn.open .hamburger-line:nth-child(3) {
     transform: translateY(-7px) rotate(-45deg);
 }
@@ -410,7 +443,7 @@ td {
 }
 
 tr:hover {
-    background-color: rgba(0,0,0,0.02);
+    background-color: rgba(0, 0, 0, 0.02);
 }
 
 /* ===========================
@@ -460,11 +493,30 @@ tr:hover {
     font-weight: 600;
 }
 
-.badge-success { background: #d4edda; color: #155724; }
-.badge-warning { background: #fff3cd; color: #856404; }
-.badge-danger  { background: #f8d7da; color: #721c24; }
-.badge-primary { background: #cfe2ff; color: #084298; }
-.badge-info    { background: #cff4fc; color: #055160; }
+.badge-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.badge-warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge-danger {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.badge-primary {
+    background: #cfe2ff;
+    color: #084298;
+}
+
+.badge-info {
+    background: #cff4fc;
+    color: #055160;
+}
 
 /* ===========================
    TOAST NOTIFICATIONS
@@ -485,8 +537,13 @@ tr:hover {
     background: var(--card-bg);
 }
 
-.toast-success { border-left: 5px solid var(--success-color); }
-.toast-info    { border-left: 5px solid var(--info-color); }
+.toast-success {
+    border-left: 5px solid var(--success-color);
+}
+
+.toast-info {
+    border-left: 5px solid var(--info-color);
+}
 
 /* ===========================
    FORM STYLES
@@ -538,7 +595,7 @@ tr:hover {
     /* Sidebar visible cuando tiene clase .open */
     .sidebar.open {
         transform: translateX(0);
-        box-shadow: 0 0 40px rgba(0,0,0,0.35);
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
     }
 
     /* Mostrar botón hamburger */
@@ -794,10 +851,10 @@ tr:hover {
 }
 
 @media (max-width: 480px) {
+
     /* Login card más compacta */
     .login-card {
         padding: 2rem 1.25rem !important;
         margin: 1rem;
     }
 }
-
