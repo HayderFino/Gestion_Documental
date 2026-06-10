@@ -72,8 +72,12 @@ $scriptName = $_SERVER['SCRIPT_NAME'];
 // Detect project root by removing public/index.php from script name
 $projectRoot = str_replace('/public/index.php', '', $scriptName);
 
-// Remove project root from request URI
-$url = str_replace($projectRoot, '', $requestUri);
+// Remove project root from request URI only at the beginning
+if ($projectRoot !== '' && strpos($requestUri, $projectRoot) === 0) {
+    $url = substr($requestUri, strlen($projectRoot));
+} else {
+    $url = $requestUri;
+}
 
 // If there's still a /public at the start of the URL (direct access), remove it
 if (strpos($url, '/public') === 0) {
