@@ -45,7 +45,7 @@ class JsonDB {
     }
 
     public function save($data) {
-        file_put_contents($this->path, json_encode($data, JSON_PRETTY_PRINT));
+        file_put_contents($this->path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
     
     public function where($field, $value) {

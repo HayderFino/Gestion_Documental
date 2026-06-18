@@ -7,6 +7,14 @@
 // Basic error reporting
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+
+// Ensure logs directory exists
+$logDir = dirname(__DIR__) . '/logs';
+if (!is_dir($logDir)) {
+    @mkdir($logDir, 0755, true);
+}
+ini_set('error_log', $logDir . '/php_error.log');
 
 // Start Session
 session_start();
