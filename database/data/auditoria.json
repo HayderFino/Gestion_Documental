@@ -1,17 +1,17 @@
 [
     {
-        "usuario": "Jefe de L\u00ednea",
+        "usuario": "Jefe de Línea",
         "accion": "ASSIGN_EXPEDIENTE",
         "tabla": "asignaciones",
         "registro_id": 1,
         "fecha": "2026-06-03 16:53:22",
         "ip": "::1",
-        "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Juan P\u00e9rez",
+        "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Juan Pérez",
         "id": 1,
         "created_at": "2026-06-03 16:53:22"
     },
     {
-        "usuario": "Juan P\u00e9rez",
+        "usuario": "Juan Pérez",
         "accion": "REQUEST_PRESTAMO",
         "tabla": "prestamos",
         "registro_id": 1,
@@ -58,7 +58,7 @@
         "registro_id": 1,
         "fecha": "2026-06-03 21:09:34",
         "ip": "::1",
-        "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Juan P\u00e9rez",
+        "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Juan Pérez",
         "id": 6,
         "created_at": "2026-06-03 21:09:34"
     },
@@ -69,12 +69,12 @@
         "registro_id": 1,
         "fecha": "2026-06-04 17:09:51",
         "ip": "::1",
-        "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Juan P\u00e9rez",
+        "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Juan Pérez",
         "id": 7,
         "created_at": "2026-06-04 17:09:51"
     },
     {
-        "usuario": "Juan P\u00e9rez",
+        "usuario": "Juan Pérez",
         "accion": "REQUEST_PRESTAMO",
         "tabla": "prestamos",
         "registro_id": 2,
@@ -102,5 +102,16 @@
         "ip": "::1",
         "id": 10,
         "created_at": "2026-06-04 17:11:40"
+    },
+    {
+        "usuario": "Administrador Sistema",
+        "accion": "ASSIGN_EXPEDIENTE",
+        "tabla": "asignaciones",
+        "registro_id": 1,
+        "fecha": "2026-06-18 23:23:30",
+        "ip": "::1",
+        "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Ninguno (Desasignados todos)",
+        "id": 11,
+        "created_at": "2026-06-18 23:23:30"
     }
 ]
