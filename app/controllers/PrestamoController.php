@@ -8,11 +8,22 @@ use app\models\Usuario;
 use app\config\Database;
 use app\services\AuditService;
 
+/**
+ * Controlador para la gestión de préstamos y devoluciones de expedientes.
+ * Permite solicitar, aprobar, entregar, y devolver expedientes de archivo.
+ */
 class PrestamoController extends Controller {
+    /** @var Prestamo Modelo de datos del préstamo */
     private $prestamoModel;
+    /** @var Expediente Modelo de datos del expediente */
     private $expedienteModel;
+    /** @var AuditService Servicio para registrar eventos de auditoría */
     private $auditService;
 
+    /**
+     * Constructor del controlador.
+     * Verifica que exista una sesión activa.
+     */
     public function __construct() {
         if (!isset($_SESSION['user_id'])) {
             $this->redirect('/login');
@@ -22,16 +33,27 @@ class PrestamoController extends Controller {
         $this->auditService = new AuditService();
     }
 
+    /**
+     * Muestra la vista principal de gestión de préstamos.
+     * Lista préstamos filtrando por rol (Usuario ve los suyos, Admin ve todos).
+     */
     public function index() {
+        /** @var string $title Título de la vista */
         $title = "Gestión de Préstamos";
+        /** @var string $active Menú activo */
         $active = "prestamos";
+        /** @var string $role Rol del usuario actual */
         $role = $_SESSION['user_role'];
+        /** @var string $userName Nombre del usuario actual */
         $userName = $_SESSION['user_name'];
         
+        /** @var \app\helpers\JsonDB $db Conexión a la base de datos de préstamos */
         $db = new \app\helpers\JsonDB('prestamos');
+        /** @var array $allPrestamos Todos los registros de préstamos */
         $allPrestamos = $db->all();
 
         // Si es usuario, solo ve sus préstamos
+        /** @var array $prestamos Arreglo final de préstamos a mostrar */
         if ($role === 'Usuario') {
             $prestamos = array_filter($allPrestamos, function($p) use ($userName) {
                 return $p['solicitante_nombre'] === $userName;
@@ -124,14 +146,20 @@ class PrestamoController extends Controller {
     }
 
     /**
-     * @param int $id
+     * Muestra el detalle de una solicitud pendiente de préstamo al administrador.
+     * @param int|string $id ID del préstamo
      */
     public function verSolicitud($id) {
         if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
         
+        /** @var string $title Título de la vista */
         $title = "Verificar Solicitud de Préstamo";
+        /** @var string $active Menú activo */
         $active = "prestamos";
+        
+        /** @var \app\helpers\JsonDB $prestamoDb Conexión a préstamos */
         $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        /** @var array|null $p Datos del préstamo */
         $p = $prestamoDb->find($id);
 
         if (!$p || $p['estado'] !== 'pendiente_prestamo') $this->redirect('/prestamos');
@@ -163,26 +191,40 @@ class PrestamoController extends Controller {
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
+    /**
+     * Muestra el formulario para solicitar un préstamo de un expediente.
+     */
     public function create() {
         if ($_SESSION['user_role'] !== 'Usuario') {
             $this->redirect('/prestamos');
         }
+        /** @var string $title Título de la vista */
         $title = "Registrar Préstamo";
+        /** @var string $active Menú activo */
         $active = "prestamos";
         
+        /** @var \app\helpers\JsonDB $expedienteDb Conexión a expedientes */
         $expedienteDb = new \app\helpers\JsonDB('expedientes');
+        /** @var array $allDisponibles Expedientes disponibles */
         $allDisponibles = $expedienteDb->where('estado', 'disponible');
         
+        /** @var \app\helpers\JsonDB $asignacionesDb Conexión a asignaciones */
         $asignacionesDb = new \app\helpers\JsonDB('asignaciones');
+        /** @var array $misAsignaciones Asignaciones del usuario */
         $misAsignaciones = $asignacionesDb->where('usuario_id', $_SESSION['user_id']);
+        /** @var array $misIds IDs de expedientes asignados */
         $misIds = array_column($misAsignaciones, 'expediente_id');
         
+        /** @var array $expedientes Expedientes disponibles y asignados al usuario */
         $expedientes = array_filter($allDisponibles, function($exp) use ($misIds) {
             return in_array($exp['id'], $misIds);
         });
         
+        /** @var array $lineas Opciones para línea de expediente */
         $lineas = ['Recurso Hídrico', 'Minería y Ecosistemas', 'Residuos e Infraestructura', 'Forestal', 'Fauna', 'No sabe'];
+        /** @var array $vinculaciones Opciones de vinculación */
         $vinculaciones = ['Funcionario', 'Contratista'];
+        /** @var array $motivos Opciones de motivo de consulta */
         $motivos = [
             'Respuesta Correspondencia', 'Atención Queja', 'Concepto Liquidación', 
             'Auto Liquidación', 'Auto Visita', 'Concepto técnico Visita', 
@@ -276,12 +318,20 @@ class PrestamoController extends Controller {
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
+    /**
+     * Procesa la solicitud POST para guardar un nuevo registro de préstamo (estado pendiente_prestamo).
+     */
     public function store() {
+        /** @var \app\helpers\JsonDB $prestamoDb BD préstamos */
         $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        /** @var \app\helpers\JsonDB $expedienteDb BD expedientes */
         $expedienteDb = new \app\helpers\JsonDB('expedientes');
+        /** @var \app\helpers\JsonDB $auditDb BD auditoría */
         $auditDb = new \app\helpers\JsonDB('auditoria');
 
+        /** @var string|int $expedienteId ID del expediente solicitado */
         $expedienteId = $_POST['expediente_id'];
+        /** @var array $expediente Datos del expediente */
         $expediente = $expedienteDb->find($expedienteId);
 
         // Validaciones
@@ -321,15 +371,20 @@ class PrestamoController extends Controller {
     }
 
     /**
-     * @param int $id
+     * Aprueba una solicitud de préstamo por un administrador.
+     * @param int|string $id ID del préstamo
      */
     public function aprobarPrestamo($id) {
         if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
 
+        /** @var \app\helpers\JsonDB $prestamoDb BD préstamos */
         $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        /** @var \app\helpers\JsonDB $expedienteDb BD expedientes */
         $expedienteDb = new \app\helpers\JsonDB('expedientes');
+        /** @var \app\helpers\JsonDB $auditDb BD auditoría */
         $auditDb = new \app\helpers\JsonDB('auditoria');
 
+        /** @var array|null $p Datos del préstamo */
         $p = $prestamoDb->find($id);
         if ($p && $p['estado'] == 'pendiente_prestamo') {
             $prestamoDb->update($id, [
@@ -357,20 +412,27 @@ class PrestamoController extends Controller {
     }
 
     /**
-     * @param int $id
+     * Muestra el formulario para diligenciar la entrega de un expediente por parte de un usuario.
+     * @param int|string $id ID del préstamo
      */
     public function entregar($id) {
         if ($_SESSION['user_role'] !== 'Usuario') $this->redirect('/prestamos');
 
+        /** @var string $title Título de la vista */
         $title = "Diligenciar Entrega de Expediente";
+        /** @var string $active Menú activo */
         $active = "prestamos";
+        
+        /** @var \app\helpers\JsonDB $prestamoDb BD préstamos */
         $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        /** @var array|null $p Datos del préstamo */
         $p = $prestamoDb->find($id);
 
         if (!$p || $p['estado'] !== 'entregado' || ($p['usuario_solicitante_id'] ?? null) != $_SESSION['user_id']) {
             $this->redirect('/prestamos');
         }
 
+        /** @var array $tramites Opciones de trámite realizado */
         $tramites = [
             'Concepto Técnico Queja', 'Concepto Liquidación', 'Auto Liquidación',
             'Auto Visita', 'Concepto técnico Visita', 'Resolución Seguimiento',
@@ -467,12 +529,15 @@ class PrestamoController extends Controller {
     }
 
     /**
-     * @param int $id
+     * Procesa la solicitud POST enviada por un usuario para entregar el expediente (cambia a pendiente_devolucion).
+     * @param int|string $id ID del préstamo
      */
     public function procesarEntrega($id) {
         if ($_SESSION['user_role'] !== 'Usuario') $this->redirect('/prestamos');
 
+        /** @var \app\helpers\JsonDB $prestamoDb BD préstamos */
         $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        /** @var array|null $p Datos del préstamo */
         $p = $prestamoDb->find($id);
 
         if (!$p || $p['estado'] !== 'entregado' || ($p['usuario_solicitante_id'] ?? null) != $_SESSION['user_id']) {
@@ -515,19 +580,25 @@ class PrestamoController extends Controller {
     }
 
     /**
-     * @param int $id
+     * Muestra la vista al administrador para verificar la devolución de un expediente.
+     * @param int|string $id ID del préstamo
      */
     public function devolver($id) {
         if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
 
+        /** @var string $title Título de la vista */
         $title = "Verificar Entrega de Expediente";
+        /** @var string $active Menú activo */
         $active = "prestamos";
         
+        /** @var \app\helpers\JsonDB $prestamoDb BD préstamos */
         $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        /** @var array|null $p Datos del préstamo */
         $p = $prestamoDb->find($id);
 
         if (!$p || $p['estado'] != 'pendiente_devolucion') $this->redirect('/prestamos');
 
+        /** @var array $d Datos de entrega reportados por el usuario */
         $d = $p['datos_entrega'] ?? [];
 
         ob_start();
@@ -607,16 +678,22 @@ class PrestamoController extends Controller {
     }
 
     /**
-     * @param int $id
+     * Procesa la confirmación de devolución del expediente por un administrador (cambia a devuelto y en expediente disponible).
+     * @param int|string $id ID del préstamo
      */
     public function procesarDevolucion($id) {
         if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
 
+        /** @var \app\helpers\JsonDB $prestamoDb BD préstamos */
         $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        /** @var \app\helpers\JsonDB $expedienteDb BD expedientes */
         $expedienteDb = new \app\helpers\JsonDB('expedientes');
+        /** @var \app\helpers\JsonDB $devolucionDb BD devoluciones (historial) */
         $devolucionDb = new \app\helpers\JsonDB('devoluciones');
+        /** @var \app\helpers\JsonDB $auditDb BD auditoría */
         $auditDb = new \app\helpers\JsonDB('auditoria');
 
+        /** @var array|null $p Datos del préstamo */
         $p = $prestamoDb->find($id);
         if (!$p) $this->redirect('/prestamos');
 
@@ -661,15 +738,20 @@ class PrestamoController extends Controller {
     }
 
     /**
-     * @param int $id
+     * Procesa el rechazo de la devolución del expediente por el administrador.
+     * @param int|string $id ID del préstamo
      */
     public function rechazarDevolucion($id) {
         if ($_SESSION['user_role'] !== 'Administrador') $this->redirect('/prestamos');
 
+        /** @var \app\helpers\JsonDB $prestamoDb BD préstamos */
         $prestamoDb = new \app\helpers\JsonDB('prestamos');
+        /** @var \app\helpers\JsonDB $expDb BD expedientes */
         $expDb = new \app\helpers\JsonDB('expedientes');
+        /** @var \app\helpers\JsonDB $auditoriaDb BD auditoría */
         $auditoriaDb = new \app\helpers\JsonDB('auditoria');
 
+        /** @var array|null $p Datos del préstamo */
         $p = $prestamoDb->find($id);
         if (!$p) $this->redirect('/prestamos');
 

@@ -2,27 +2,52 @@
 
 namespace app\controllers;
 
+/**
+ * Controlador para el Panel de Control (Dashboard).
+ * Muestra resúmenes, estadísticas y accesos rápidos a expedientes y préstamos según el rol.
+ */
 class DashboardController extends Controller {
+    
+    /**
+     * Constructor del controlador del dashboard.
+     * Protege el acceso requiriendo sesión iniciada.
+     */
     public function __construct() {
         if (!isset($_SESSION['user_id'])) {
             $this->redirect('/login');
         }
     }
 
+    /**
+     * Muestra la vista principal del Dashboard.
+     * Calcula estadísticas basándose en el rol del usuario (Administrador, Jefe de Línea o Usuario).
+     */
     public function index() {
+        /** @var string $title Título de la vista */
         $title = "Panel de Control";
+        /** @var string $active Menú activo en navegación */
         $active = "dashboard";
+        
+        /** @var string $role Rol del usuario actual */
         $role = $_SESSION['user_role'];
+        /** @var string $userName Nombre del usuario actual */
         $userName = $_SESSION['user_name'];
+        /** @var string|int $userId ID del usuario actual */
         $userId = $_SESSION['user_id'];
         
+        /** @var \app\helpers\JsonDB $expDb Conexión a la tabla de expedientes */
         $expDb = new \app\helpers\JsonDB('expedientes');
+        /** @var \app\helpers\JsonDB $preDb Conexión a la tabla de préstamos */
         $preDb = new \app\helpers\JsonDB('prestamos');
         
+        /** @var array $allPrestamos Lista completa de préstamos para calcular estadísticas */
         $allPrestamos = $preDb->all();
         
+        /** @var array $stats Estadísticas a mostrar en las tarjetas superiores */
         if ($role !== 'Administrador' && $role !== 'Jefe de Línea') {
+            /** @var \app\helpers\JsonDB $asigDb Conexión a la tabla de asignaciones para roles estándar */
             $asigDb = new \app\helpers\JsonDB('asignaciones');
+            /** @var array $misAsignaciones Expedientes asignados a este usuario */
             $misAsignaciones = $asigDb->where('usuario_id', $userId);
             
             $stats = [
@@ -46,8 +71,11 @@ class DashboardController extends Controller {
             ];
         }
 
+        /** @var string $targetActivos Identificador del ancla para préstamos activos */
         $targetActivos = ($role === 'Administrador') ? '#dashboard-activos' : '#dashboard-mis-expedientes';
+        /** @var string $targetSolicitudes Identificador del ancla para solicitudes */
         $targetSolicitudes = ($role === 'Administrador') ? '#dashboard-solicitudes' : '#dashboard-mis-expedientes';
+        /** @var string $targetDevoluciones Identificador del ancla para devoluciones */
         $targetDevoluciones = ($role === 'Administrador') ? '#dashboard-devoluciones' : '#dashboard-mis-expedientes';
 
         ob_start();
@@ -90,16 +118,17 @@ class DashboardController extends Controller {
                         </thead>
                         <tbody>
                             <?php 
+                            /** @var array $pendientes Lista de préstamos en estado pendiente_prestamo */
                             $pendientes = $preDb->where('estado', 'pendiente_prestamo');
                             if (empty($pendientes)): ?>
                                 <tr><td colspan="3" style="text-align: center;">No hay solicitudes.</td></tr>
                             <?php endif;
-                            foreach ($pendientes as $p): ?>
+                            foreach ($pendientes as $prestamoItem): ?>
                             <tr>
-                                <td><strong><?= $p['numero_expediente'] ?></strong></td>
-                                <td><?= $p['solicitante_nombre'] ?></td>
+                                <td><strong><?= htmlspecialchars($prestamoItem['numero_expediente']) ?></strong></td>
+                                <td><?= htmlspecialchars($prestamoItem['solicitante_nombre']) ?></td>
                                 <td>
-                                    <a href="<?= $_ENV['BASE_URL'] ?>/prestamos/ver-solicitud/<?= $p['id'] ?>" class="btn btn-primary" style="padding: 4px 8px; background: var(--accent-color);" title="Verificar Solicitud">
+                                    <a href="<?= $_ENV['BASE_URL'] ?>/prestamos/ver-solicitud/<?= $prestamoItem['id'] ?>" class="btn btn-primary" style="padding: 4px 8px; background: var(--accent-color);" title="Verificar Solicitud">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>
@@ -122,16 +151,17 @@ class DashboardController extends Controller {
                         </thead>
                         <tbody>
                             <?php 
+                            /** @var array $devoluciones Lista de devoluciones pendientes por verificar */
                             $devoluciones = $preDb->where('estado', 'pendiente_devolucion');
                             if (empty($devoluciones)): ?>
                                 <tr><td colspan="3" style="text-align: center;">No hay entregas pendientes.</td></tr>
                             <?php endif;
-                            foreach ($devoluciones as $p): ?>
+                            foreach ($devoluciones as $prestamoItem): ?>
                             <tr>
-                                <td><strong><?= $p['numero_expediente'] ?></strong></td>
-                                <td><?= $p['solicitante_nombre'] ?></td>
+                                <td><strong><?= htmlspecialchars($prestamoItem['numero_expediente']) ?></strong></td>
+                                <td><?= htmlspecialchars($prestamoItem['solicitante_nombre']) ?></td>
                                 <td>
-                                    <a href="<?= $_ENV['BASE_URL'] ?>/prestamos/devolver/<?= $p['id'] ?>" class="btn btn-primary" style="padding: 4px 8px; background: var(--success-color);" title="Verificar Entrega">
+                                    <a href="<?= $_ENV['BASE_URL'] ?>/prestamos/devolver/<?= $prestamoItem['id'] ?>" class="btn btn-primary" style="padding: 4px 8px; background: var(--success-color);" title="Verificar Entrega">
                                         <i class="fas fa-check-double"></i>
                                     </a>
                                 </td>
@@ -154,18 +184,19 @@ class DashboardController extends Controller {
                         </thead>
                         <tbody>
                             <?php 
+                            /** @var array $activos Expedientes que no están en el archivo */
                             $activos = array_filter($allPrestamos, function($p) {
                                 return $p['estado'] === 'entregado' || $p['estado'] === 'pendiente_devolucion';
                             });
                             if (empty($activos)): ?>
                                 <tr><td colspan="3" style="text-align: center;">Todos están en archivo.</td></tr>
                             <?php endif;
-                            foreach ($activos as $p): ?>
+                            foreach ($activos as $prestamoItem): ?>
                             <tr>
-                                <td><strong><?= $p['numero_expediente'] ?></strong></td>
-                                <td><?= $p['solicitante_nombre'] ?></td>
+                                <td><strong><?= htmlspecialchars($prestamoItem['numero_expediente']) ?></strong></td>
+                                <td><?= htmlspecialchars($prestamoItem['solicitante_nombre']) ?></td>
                                 <td>
-                                    <?php if ($p['estado'] === 'entregado'): ?>
+                                    <?php if ($prestamoItem['estado'] === 'entregado'): ?>
                                         <span class="badge badge-info">En poder del usuario</span>
                                     <?php else: ?>
                                         <span class="badge badge-warning">En proceso de entrega</span>
@@ -192,24 +223,25 @@ class DashboardController extends Controller {
                     </thead>
                     <tbody>
                         <?php 
+                        /** @var array $misPrestamos Préstamos activos o pendientes de devolución pertenecientes al usuario */
                         $misPrestamos = array_filter($allPrestamos, function($p) use ($userId) {
                             return ($p['usuario_solicitante_id'] ?? null) == $userId && ($p['estado'] == 'entregado' || $p['estado'] == 'pendiente_devolucion');
                         });
                         if (empty($misPrestamos)): ?>
                             <tr><td colspan="4" style="text-align: center;">No tienes expedientes en tu poder.</td></tr>
                         <?php endif;
-                        foreach ($misPrestamos as $p): ?>
+                        foreach ($misPrestamos as $prestamoItem): ?>
                         <tr>
-                            <td><strong><?= $p['numero_expediente'] ?></strong></td>
-                            <td><?= date('d/m/Y', strtotime($p['fecha_prestamo'] ?? '')) ?></td>
+                            <td><strong><?= htmlspecialchars($prestamoItem['numero_expediente']) ?></strong></td>
+                            <td><?= date('d/m/Y', strtotime($prestamoItem['fecha_prestamo'] ?? '')) ?></td>
                             <td>
-                                <span class="badge badge-<?= $p['estado'] == 'entregado' ? 'info' : 'warning' ?>">
-                                    <?= $p['estado'] == 'entregado' ? 'En mi poder' : 'Entrega solicitada' ?>
+                                <span class="badge badge-<?= $prestamoItem['estado'] == 'entregado' ? 'info' : 'warning' ?>">
+                                    <?= $prestamoItem['estado'] == 'entregado' ? 'En mi poder' : 'Entrega solicitada' ?>
                                 </span>
                             </td>
                             <td>
-                                <?php if ($p['estado'] == 'entregado'): ?>
-                                    <a href="<?= $_ENV['BASE_URL'] ?>/prestamos/solicitar-devolucion/<?= $p['id'] ?>" class="btn btn-primary" style="padding: 4px 8px; background: var(--warning-color);">
+                                <?php if ($prestamoItem['estado'] == 'entregado'): ?>
+                                    <a href="<?= $_ENV['BASE_URL'] ?>/prestamos/solicitar-devolucion/<?= $prestamoItem['id'] ?>" class="btn btn-primary" style="padding: 4px 8px; background: var(--warning-color);">
                                         <i class="fas fa-undo"></i> Entregar
                                     </a>
                                 <?php endif; ?>
@@ -222,6 +254,7 @@ class DashboardController extends Controller {
         <?php endif; ?>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                // Agregar comportamiento de desplazamiento suave a las tarjetas del dashboard
                 document.querySelectorAll('.stat-card-link').forEach(function(card) {
                     card.addEventListener('click', function(event) {
                         var target = document.querySelector(this.getAttribute('href'));
@@ -235,6 +268,7 @@ class DashboardController extends Controller {
             });
         </script>
         <?php
+        /** @var string $content HTML generado de la vista index del dashboard */
         $content = ob_get_clean();
         
         $this->render('layouts/main', compact('title', 'active', 'content'));

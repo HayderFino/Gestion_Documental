@@ -5,11 +5,22 @@ namespace app\controllers;
 use app\models\Expediente;
 use app\services\AuditService;
 
+/**
+ * Controlador para la gestión completa de expedientes.
+ * Permite crear, editar, asignar, y visualizar expedientes según el rol del usuario.
+ */
 class ExpedienteController extends Controller
 {
+    /** @var Expediente Modelo de datos del expediente */
     private $expedienteModel;
+    
+    /** @var AuditService Servicio para registrar auditorías de acciones */
     private $auditService;
 
+    /**
+     * Constructor del controlador.
+     * Verifica la sesión activa del usuario y carga servicios necesarios.
+     */
     public function __construct()
     {
         if (!isset($_SESSION['user_id'])) {
@@ -19,6 +30,10 @@ class ExpedienteController extends Controller
         $this->auditService = new AuditService();
     }
 
+    /**
+     * Verifica si el usuario actual es Administrador.
+     * Si no lo es, redirige al listado de expedientes.
+     */
     private function checkAdmin()
     {
         if ($_SESSION['user_role'] !== 'Administrador') {
@@ -26,22 +41,36 @@ class ExpedienteController extends Controller
         }
     }
 
+    /**
+     * Muestra la vista principal de gestión de expedientes.
+     * Lista todos los expedientes, filtrando si el usuario es estándar.
+     */
     public function index()
     {
+        /** @var string $title Título de la vista */
         $title = "Gestión de Expedientes";
+        /** @var string $active Menú activo */
         $active = "expedientes";
 
+        /** @var \app\helpers\JsonDB $db Conexión DB expedientes */
         $db = new \app\helpers\JsonDB('expedientes');
+        /** @var array $allExpedientes Todos los expedientes */
         $allExpedientes = $db->all();
 
+        /** @var string $role Rol del usuario */
         $role = $_SESSION['user_role'];
+        /** @var int|string $userId ID del usuario actual */
         $userId = $_SESSION['user_id'];
         
+        /** @var \app\helpers\JsonDB $asignacionesDb DB asignaciones */
         $asignacionesDb = new \app\helpers\JsonDB('asignaciones');
+        /** @var array $allAsignaciones Todas las asignaciones */
         $allAsignaciones = $asignacionesDb->all();
 
         // Mapear usuarios para mostrar nombres
+        /** @var \app\helpers\JsonDB $usuariosDb DB usuarios */
         $usuariosDb = new \app\helpers\JsonDB('usuarios');
+        /** @var array $allUsuarios Todos los usuarios */
         $allUsuarios = $usuariosDb->all();
         $usuariosMap = [];
         foreach ($allUsuarios as $u) {
@@ -165,12 +194,20 @@ class ExpedienteController extends Controller
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
+    /**
+     * Muestra el detalle de un expediente específico.
+     * @param int|string $id Identificador del expediente
+     */
     public function ver($id)
     {
+        /** @var string $title Título de la vista */
         $title = "Ver Expediente";
+        /** @var string $active Menú activo */
         $active = "expedientes";
 
+        /** @var \app\helpers\JsonDB $db DB expedientes */
         $db = new \app\helpers\JsonDB('expedientes');
+        /** @var array|null $exp Datos del expediente */
         $exp = $db->find($id);
 
         if (!$exp) {
@@ -231,10 +268,15 @@ class ExpedienteController extends Controller
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
+    /**
+     * Muestra el formulario para registrar un nuevo expediente.
+     */
     public function create()
     {
         $this->checkAdmin();
+        /** @var string $title Título de la vista */
         $title = "Crear Nuevo Expediente";
+        /** @var string $active Menú activo */
         $active = "expedientes";
 
         ob_start();
@@ -283,10 +325,15 @@ class ExpedienteController extends Controller
         $this->render('layouts/main', compact('title', 'active', 'content'));
     }
 
+    /**
+     * Procesa la solicitud POST para guardar el nuevo expediente en la DB.
+     */
     public function store()
     {
         $this->checkAdmin();
+        /** @var \app\helpers\JsonDB $db Conexión BD expedientes */
         $db = new \app\helpers\JsonDB('expedientes');
+        /** @var \app\helpers\JsonDB $auditDb Conexión BD auditoría */
         $auditDb = new \app\helpers\JsonDB('auditoria');
 
         $data = [
@@ -317,15 +364,20 @@ class ExpedienteController extends Controller
     }
 
     /**
-     * @param int $id
+     * Muestra el formulario de edición (Inventario Técnico) de un expediente.
+     * @param int|string $id Identificador del expediente a editar
      */
     public function edit($id)
     {
         $this->checkAdmin();
+        /** @var string $title Título de la vista */
         $title = "Editar Expediente";
+        /** @var string $active Menú activo */
         $active = "expedientes";
 
+        /** @var \app\helpers\JsonDB $db BD expedientes */
         $db = new \app\helpers\JsonDB('expedientes');
+        /** @var array|null $exp Datos del expediente */
         $exp = $db->find($id);
 
         if (!$exp)
@@ -489,12 +541,15 @@ class ExpedienteController extends Controller
     }
 
     /**
-     * @param int $id
+     * Procesa la actualización del expediente por POST.
+     * @param int|string $id ID del expediente
      */
     public function update($id)
     {
         $this->checkAdmin();
+        /** @var \app\helpers\JsonDB $db BD expedientes */
         $db = new \app\helpers\JsonDB('expedientes');
+        /** @var \app\helpers\JsonDB $auditDb BD auditoría */
         $auditDb = new \app\helpers\JsonDB('auditoria');
 
         $data = [
@@ -535,16 +590,20 @@ class ExpedienteController extends Controller
     }
 
     /**
-     * @param int $id
+     * Muestra la vista para asignar acceso al expediente a uno o más usuarios.
+     * @param int|string $id ID del expediente
      */
     public function asignar($id)
     {
+        /** @var string $role Rol del usuario actual */
         $role = $_SESSION['user_role'];
         if ($role !== 'Administrador' && $role !== 'Jefe de Línea') {
             $this->redirect('/expedientes');
         }
 
+        /** @var string $title Título de la vista */
         $title = "Asignar Expediente";
+        /** @var string $active Menú activo */
         $active = "expedientes";
 
         $db = new \app\helpers\JsonDB('expedientes');
@@ -655,10 +714,12 @@ class ExpedienteController extends Controller
     }
 
     /**
-     * @param int $id
+     * Procesa la solicitud POST para guardar las asignaciones de usuarios a un expediente.
+     * @param int|string $id ID del expediente
      */
     public function guardarAsignacion($id)
     {
+        /** @var string $role Rol actual */
         $role = $_SESSION['user_role'];
         if ($role !== 'Administrador' && $role !== 'Jefe de Línea') {
             $this->redirect('/expedientes');
