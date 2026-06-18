@@ -305,6 +305,7 @@ h5 {
     margin-left: var(--sidebar-width);
     padding: 2rem;
     min-width: 0;
+    max-width: calc(100vw - var(--sidebar-width));
 }
 
 /* ===========================
@@ -422,6 +423,22 @@ h5 {
     -webkit-overflow-scrolling: touch;
 }
 
+/* Custom Scrollbar for Table Container */
+.table-container::-webkit-scrollbar {
+    height: 10px;
+}
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: var(--radius-lg);
+}
+.table-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: var(--radius-lg);
+}
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -444,6 +461,38 @@ td {
 
 tr:hover {
     background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* ===========================
+   PAGINATION
+   =========================== */
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.pagination-controls .btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    min-width: 32px;
+    justify-content: center;
+}
+
+.pagination-controls .pagination-dots {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.pagination-controls .pagination-info {
+    width: 100%;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
 }
 
 /* ===========================
@@ -614,6 +663,7 @@ tr:hover {
     .main-content {
         margin-left: 0;
         padding: 0.85rem;
+        max-width: 100vw;
     }
 
     /* Topbar */
@@ -856,5 +906,54 @@ tr:hover {
     .login-card {
         padding: 2rem 1.25rem !important;
         margin: 1rem;
+    }
+}
+
+/* ===========================
+   LOADING OVERLAY
+   =========================== */
+.global-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.global-loading-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(26, 79, 139, 0.2);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.loading-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
 }

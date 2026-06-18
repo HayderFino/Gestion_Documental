@@ -95,6 +95,11 @@ $title = $title ?? 'Gestión de Expedientes';
             </section>
         </main>
     </div>
+    <!-- Global Loading Overlay -->
+    <div class="global-loading-overlay" id="globalLoadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Cargando...</div>
+    </div>
 
     <script src="<?= $_ENV['BASE_URL'] ?>/assets/js/main.js"></script>
 </body>

@@ -63,5 +63,17 @@
             </button>
         </form>
     </div>
+
+    <!-- Global Loading Overlay -->
+    <div class="global-loading-overlay" id="globalLoadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Iniciando sesión...</div>
+    </div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function() {
+            document.getElementById('globalLoadingOverlay').classList.add('active');
+        });
+    </script>
 </body>
 </html>

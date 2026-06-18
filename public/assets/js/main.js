@@ -70,22 +70,119 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ===========================
-    // FILTRO DE TABLA (búsqueda)
+    // PAGINACIÓN Y FILTRO DE TABLAS
     // ===========================
+    const itemsPerPage = 20;
     const searchInput = document.querySelector('.search-box input');
-    if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            const term = searchInput.value.toLowerCase().trim();
-            const rows = document.querySelectorAll('table tbody tr');
+    
+    document.querySelectorAll('.table-container table').forEach(table => {
+        const tbody = table.querySelector('tbody');
+        if (!tbody) return;
+        
+        const allRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.cells.length > 1); // Exclude "no data" row
+        if (allRows.length === 0) return; // Nothing to paginate
+        
+        let currentPage = 1;
+        let filteredRows = [...allRows];
+        
+        // Crear contenedor de paginación
+        const paginationContainer = document.createElement('div');
+        paginationContainer.className = 'pagination-controls';
+        table.parentElement.parentElement.insertBefore(paginationContainer, table.parentElement.nextSibling);
 
-            rows.forEach(row => {
-                // Omitir filas de "no hay registros"
-                if (row.cells.length === 1) return;
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(term) ? '' : 'none';
+        function renderTable() {
+            allRows.forEach(row => row.style.display = 'none'); // Ocultar todo
+            
+            const totalPages = Math.ceil(filteredRows.length / itemsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            
+            // Mostrar solo los elementos de la página actual
+            filteredRows.slice(start, end).forEach(row => {
+                row.style.display = '';
             });
-        });
-    }
+            
+            renderPagination(totalPages);
+        }
+        
+        function renderPagination(totalPages) {
+            paginationContainer.innerHTML = '';
+            if (totalPages <= 1) return;
+            
+            const createBtn = (text, page, disabled = false, active = false) => {
+                const btn = document.createElement('button');
+                btn.innerHTML = text;
+                btn.className = `btn btn-sm ${active ? 'btn-primary' : 'btn-secondary'} pagination-btn`;
+                btn.type = 'button';
+                if (disabled) btn.disabled = true;
+                if (!disabled && !active) {
+                    btn.addEventListener('click', () => {
+                        currentPage = page;
+                        renderTable();
+                        // Opcional: hacer scroll suave hacia arriba de la tabla
+                        table.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
+                }
+                return btn;
+            };
+            
+            paginationContainer.appendChild(createBtn('<i class="fas fa-chevron-left"></i>', currentPage - 1, currentPage === 1));
+            
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+            
+            if (startPage > 1) {
+                paginationContainer.appendChild(createBtn('1', 1));
+                if (startPage > 2) {
+                    const dots = document.createElement('span');
+                    dots.innerHTML = '...';
+                    dots.className = 'pagination-dots';
+                    paginationContainer.appendChild(dots);
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                paginationContainer.appendChild(createBtn(i, i, false, i === currentPage));
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const dots = document.createElement('span');
+                    dots.innerHTML = '...';
+                    dots.className = 'pagination-dots';
+                    paginationContainer.appendChild(dots);
+                }
+                paginationContainer.appendChild(createBtn(totalPages, totalPages));
+            }
+            
+            paginationContainer.appendChild(createBtn('<i class="fas fa-chevron-right"></i>', currentPage + 1, currentPage === totalPages));
+            
+            // Información de resultados
+            const info = document.createElement('div');
+            info.className = 'pagination-info';
+            const total = filteredRows.length;
+            const startStr = total === 0 ? 0 : ((currentPage - 1) * itemsPerPage) + 1;
+            const endStr = Math.min(currentPage * itemsPerPage, total);
+            info.innerHTML = `Mostrando ${startStr} - ${endStr} de ${total} registros`;
+            paginationContainer.appendChild(info);
+        }
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                const term = searchInput.value.toLowerCase().trim();
+                filteredRows = allRows.filter(row => {
+                    return row.innerText.toLowerCase().includes(term);
+                });
+                currentPage = 1;
+                renderTable();
+            });
+        }
+        
+        renderTable();
+    });
 
     // ===========================
     // DATA-LABEL EN TD (para responsive)
@@ -135,5 +232,50 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => toast.remove(), 300);
         }, 3000);
     };
+
+    // ===========================
+    // LOADING OVERLAY
+    // ===========================
+    const globalLoadingOverlay = document.getElementById('globalLoadingOverlay');
+
+    window.showLoading = () => {
+        if (globalLoadingOverlay) {
+            globalLoadingOverlay.classList.add('active');
+        }
+    };
+
+    window.hideLoading = () => {
+        if (globalLoadingOverlay) {
+            globalLoadingOverlay.classList.remove('active');
+        }
+    };
+
+    // Trigger loading on regular links
+    document.querySelectorAll('a:not([target="_blank"]):not([href^="#"]):not([href^="javascript:"])').forEach(link => {
+        link.addEventListener('click', (e) => {
+            // Don't trigger if ctrl/cmd is pressed (opening in new tab)
+            if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+            // Don't trigger if it has a class like 'no-loader' or similar (optional)
+            if (link.classList.contains('no-loader')) return;
+            
+            showLoading();
+        });
+    });
+
+    // Trigger loading on form submits (if not prevented by confirmation dialog)
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', (e) => {
+            if (!e.defaultPrevented) {
+                showLoading();
+            }
+        });
+    });
+
+    // Hide loader when page is restored from cache (bfcache)
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            hideLoading();
+        }
+    });
 
 });
