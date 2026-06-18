@@ -423,7 +423,7 @@ h5 {
     -webkit-overflow-scrolling: touch;
 }
 
-/* Custom Scrollbar for Table Container */
+/* Barra de Desplazamiento Personalizada para Tablas */
 .table-container::-webkit-scrollbar {
     height: 10px;
 }
@@ -464,7 +464,7 @@ tr:hover {
 }
 
 /* ===========================
-   PAGINATION
+   PAGINACIÓN
    =========================== */
 .pagination-controls {
     display: flex;
@@ -910,7 +910,7 @@ tr:hover {
 }
 
 /* ===========================
-   LOADING OVERLAY
+   CAPA DE CARGA GLOBAL
    =========================== */
 .global-loading-overlay {
     position: fixed;

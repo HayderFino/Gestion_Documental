@@ -79,8 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const tbody = table.querySelector('tbody');
         if (!tbody) return;
         
-        const allRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.cells.length > 1); // Exclude "no data" row
-        if (allRows.length === 0) return; // Nothing to paginate
+        const allRows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.cells.length > 1); // Excluir fila de "sin datos"
+        if (allRows.length === 0) return; // Nada que paginar
         
         let currentPage = 1;
         let filteredRows = [...allRows];
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ===========================
-    // TOAST NOTIFICATIONS
+    // NOTIFICACIONES TOAST
     // ===========================
     window.showToast = (message, type = 'info') => {
         const toast = document.createElement('div');
@@ -234,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ===========================
-    // LOADING OVERLAY
+    // CAPA DE CARGA GLOBAL
     // ===========================
     const globalLoadingOverlay = document.getElementById('globalLoadingOverlay');
 
@@ -250,19 +250,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Trigger loading on regular links
+    // Activar carga en enlaces regulares
     document.querySelectorAll('a:not([target="_blank"]):not([href^="#"]):not([href^="javascript:"])').forEach(link => {
         link.addEventListener('click', (e) => {
-            // Don't trigger if ctrl/cmd is pressed (opening in new tab)
+            // No activar si se presiona ctrl/cmd (abrir en nueva pestaña)
             if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
-            // Don't trigger if it has a class like 'no-loader' or similar (optional)
+            // No activar si tiene la clase 'no-loader' o similar (opcional)
             if (link.classList.contains('no-loader')) return;
             
             showLoading();
         });
     });
 
-    // Trigger loading on form submits (if not prevented by confirmation dialog)
+    // Activar carga al enviar formularios (si no lo previene el diálogo de confirmación)
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', (e) => {
             if (!e.defaultPrevented) {
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Hide loader when page is restored from cache (bfcache)
+    // Ocultar carga cuando la página se restaura desde la caché (bfcache)
     window.addEventListener('pageshow', (event) => {
         if (event.persisted) {
             hideLoading();

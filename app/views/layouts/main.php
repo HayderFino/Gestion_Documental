@@ -95,7 +95,7 @@ $title = $title ?? 'Gestión de Expedientes';
             </section>
         </main>
     </div>
-    <!-- Global Loading Overlay -->
+    <!-- Capa de Carga Global -->
     <div class="global-loading-overlay" id="globalLoadingOverlay">
         <div class="loading-spinner"></div>
         <div class="loading-text">Cargando...</div>
