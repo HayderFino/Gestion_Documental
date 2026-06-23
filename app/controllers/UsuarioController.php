@@ -371,6 +371,26 @@ class UsuarioController extends Controller {
             $this->redirect("/usuarios/editar/{$id}");
         }
 
+        // Validación: Bloquear inactivación si tiene expedientes asignados o préstamos activos
+        if ($estado === 'inactivo') {
+            $asignacionesDb = new \app\helpers\JsonDB('asignaciones');
+            $misAsignaciones = $asignacionesDb->where('usuario_id', $id);
+            if (!empty($misAsignaciones)) {
+                $_SESSION['user_error'] = "No se puede inactivar el usuario porque tiene expedientes asignados en el sistema.";
+                $this->redirect("/usuarios/editar/{$id}");
+            }
+
+            $prestamosDb = new \app\helpers\JsonDB('prestamos');
+            $todosPrestamos = $prestamosDb->all();
+            $prestamosActivos = array_filter($todosPrestamos, function($p) use ($id) {
+                return $p['usuario_solicitante_id'] == $id && $p['estado'] !== 'devuelto';
+            });
+            if (!empty($prestamosActivos)) {
+                $_SESSION['user_error'] = "No se puede inactivar el usuario porque tiene préstamos pendientes de devolución.";
+                $this->redirect("/usuarios/editar/{$id}");
+            }
+        }
+
         /** @var \app\helpers\JsonDB $db Conexión BD */
         $db = new \app\helpers\JsonDB('usuarios');
         /** @var array|null $userData Datos anteriores del usuario */
