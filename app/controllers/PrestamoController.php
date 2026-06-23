@@ -395,7 +395,7 @@ class PrestamoController extends Controller {
 
             $expedienteDb->update($p['expediente_id'], [
                 'estado' => 'prestado',
-                'detalle_estado' => strtoupper($p['solicitante_nombre']) . ' (' . date('d/m/Y') . ')'
+                'detalle_estado' => mb_strtoupper($p['solicitante_nombre'], 'UTF-8') . ' (' . date('d/m/Y') . ')'
             ]);
 
             $auditDb->create([
