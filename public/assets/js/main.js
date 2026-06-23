@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.querySelector('.search-box input');
     
     document.querySelectorAll('.table-container table').forEach(table => {
+        if (table.classList.contains('no-auto-page')) return;
         const tbody = table.querySelector('tbody');
         if (!tbody) return;
         

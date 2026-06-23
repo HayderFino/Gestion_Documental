@@ -113,5 +113,88 @@
         "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Ninguno (Desasignados todos)",
         "id": 11,
         "created_at": "2026-06-18 23:23:30"
+    },
+    {
+        "usuario": "Jefe de Línea",
+        "accion": "ASSIGN_EXPEDIENTE",
+        "tabla": "asignaciones",
+        "registro_id": 1,
+        "fecha": "2026-06-23 20:53:17",
+        "ip": "::1",
+        "detalles": "Expediente CARPETA BIOSOLIDOS 0001-2021 asignado a: Juan Pérez",
+        "id": 12,
+        "created_at": "2026-06-23 20:53:17"
+    },
+    {
+        "usuario": "Jefe de Línea",
+        "accion": "ASSIGN_EXPEDIENTE",
+        "tabla": "asignaciones",
+        "registro_id": 2,
+        "fecha": "2026-06-23 20:53:35",
+        "ip": "::1",
+        "detalles": "Expediente 1007-0020-2018 asignado a: Juan Pérez",
+        "id": 13,
+        "created_at": "2026-06-23 20:53:35"
+    },
+    {
+        "usuario": "Juan Pérez",
+        "accion": "REQUEST_PRESTAMO",
+        "tabla": "prestamos",
+        "registro_id": 3,
+        "fecha": "2026-06-23 20:54:48",
+        "ip": "::1",
+        "id": 14,
+        "created_at": "2026-06-23 20:54:48"
+    },
+    {
+        "usuario": "Juan Pérez",
+        "accion": "REQUEST_PRESTAMO",
+        "tabla": "prestamos",
+        "registro_id": 4,
+        "fecha": "2026-06-23 20:55:26",
+        "ip": "::1",
+        "id": 15,
+        "created_at": "2026-06-23 20:55:26"
+    },
+    {
+        "usuario": "Administrador Sistema",
+        "accion": "APPROVE_PRESTAMO",
+        "tabla": "prestamos",
+        "registro_id": "3",
+        "fecha": "2026-06-23 20:56:16",
+        "ip": "::1",
+        "id": 16,
+        "created_at": "2026-06-23 20:56:16"
+    },
+    {
+        "usuario": "Administrador Sistema",
+        "accion": "ASSIGN_EXPEDIENTE",
+        "tabla": "asignaciones",
+        "registro_id": 3,
+        "fecha": "2026-06-23 21:08:23",
+        "ip": "::1",
+        "detalles": "Expediente 1007-0141-2018 asignado a: Juan Pérez",
+        "id": 17,
+        "created_at": "2026-06-23 21:08:23"
+    },
+    {
+        "usuario": "Juan Pérez",
+        "accion": "REQUEST_PRESTAMO",
+        "tabla": "prestamos",
+        "registro_id": 5,
+        "fecha": "2026-06-23 21:09:37",
+        "ip": "::1",
+        "id": 18,
+        "created_at": "2026-06-23 21:09:37"
+    },
+    {
+        "usuario": "Administrador Sistema",
+        "accion": "APPROVE_PRESTAMO",
+        "tabla": "prestamos",
+        "registro_id": "4",
+        "fecha": "2026-06-23 21:10:12",
+        "ip": "::1",
+        "id": 19,
+        "created_at": "2026-06-23 21:10:12"
     }
 ]

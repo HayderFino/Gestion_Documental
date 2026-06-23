@@ -2,7 +2,7 @@
     {
         "expediente_id": "1",
         "numero_expediente": "CARPETA BIOSOLIDOS 0001-2021",
-        "solicitante_nombre": "Juan P\u00e9rez",
+        "solicitante_nombre": "Juan Pérez",
         "usuario_solicitante_id": 2,
         "fecha_solicitud": "2026-06-03",
         "tipo_vinculacion": "Funcionario",
@@ -16,7 +16,7 @@
         "admin_aprueba": "Administrador Sistema",
         "datos_entrega": {
             "tramite_realizado": "Auto Visita",
-            "numero_acto": "561564654jl\u00f1jl",
+            "numero_acto": "561564654jlñjl",
             "tomos_entregados": 1,
             "folios_recibidos": 3,
             "folios_anexos": 0,
@@ -27,12 +27,12 @@
     {
         "expediente_id": "1",
         "numero_expediente": "CARPETA BIOSOLIDOS 0001-2021",
-        "solicitante_nombre": "Juan P\u00e9rez",
+        "solicitante_nombre": "Juan Pérez",
         "usuario_solicitante_id": 2,
         "fecha_solicitud": "2026-06-04",
         "tipo_vinculacion": "Funcionario",
         "linea_expediente": "Forestal",
-        "motivo_consulta": "Resoluci\u00f3n Proceso Sancionatorio",
+        "motivo_consulta": "Resolución Proceso Sancionatorio",
         "observaciones": "hkv",
         "estado": "devuelto",
         "id": 2,
@@ -40,7 +40,7 @@
         "fecha_prestamo": "2026-06-04 17:11:02",
         "admin_aprueba": "Administrador Sistema",
         "datos_entrega": {
-            "tramite_realizado": "Resoluci\u00f3n Proceso Sancionatorio",
+            "tramite_realizado": "Resolución Proceso Sancionatorio",
             "numero_acto": "cvc",
             "tomos_entregados": 1,
             "folios_recibidos": 1,
@@ -48,5 +48,60 @@
             "estado_fisico": "bueno",
             "observaciones_devolucion": ""
         }
+    },
+    {
+        "expediente_id": "1",
+        "numero_expediente": "CARPETA BIOSOLIDOS 0001-2021",
+        "solicitante_nombre": "Juan Pérez",
+        "usuario_solicitante_id": 2,
+        "fecha_solicitud": "2026-06-23",
+        "tipo_vinculacion": "Funcionario",
+        "linea_expediente": "Minería y Ecosistemas",
+        "motivo_consulta": "Concepto Liquidación",
+        "observaciones": "",
+        "estado": "pendiente_devolucion",
+        "id": 3,
+        "created_at": "2026-06-23 20:54:48",
+        "fecha_prestamo": "2026-06-23 20:56:16",
+        "admin_aprueba": "Administrador Sistema",
+        "datos_entrega": {
+            "tramite_realizado": "Concepto Liquidación",
+            "numero_acto": "dfg",
+            "tomos_entregados": 1,
+            "folios_recibidos": 2,
+            "folios_anexos": 0,
+            "estado_fisico": "bueno",
+            "observaciones_devolucion": ""
+        }
+    },
+    {
+        "expediente_id": "2",
+        "numero_expediente": "1007-0020-2018",
+        "solicitante_nombre": "Juan Pérez",
+        "usuario_solicitante_id": 2,
+        "fecha_solicitud": "2026-06-23",
+        "tipo_vinculacion": "Funcionario",
+        "linea_expediente": "Recurso Hídrico",
+        "motivo_consulta": "Auto Liquidación",
+        "observaciones": "",
+        "estado": "entregado",
+        "id": 4,
+        "created_at": "2026-06-23 20:55:26",
+        "fecha_prestamo": "2026-06-23 21:10:12",
+        "admin_aprueba": "Administrador Sistema"
+    },
+    {
+        "expediente_id": "3",
+        "numero_expediente": "1007-0141-2018",
+        "solicitante_nombre": "Juan Pérez",
+        "usuario_solicitante_id": 2,
+        "fecha_solicitud": "2026-06-23",
+        "tipo_vinculacion": "Contratista",
+        "linea_expediente": "Forestal",
+        "motivo_consulta": "Respuesta Correspondencia",
+        "observaciones": "",
+        "estado": "pendiente_prestamo",
+        "id": 5,
+        "created_at": "2026-06-23 21:09:37"
     }
 ]
