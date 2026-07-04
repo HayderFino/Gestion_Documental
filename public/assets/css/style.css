@@ -45,25 +45,66 @@
 /* ===========================
    ANIMATIONS
    =========================== */
+@-webkit-keyframes fadeIn {
+    from {
+        opacity: 0;
+        -webkit-transform: translateY(10px);
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
+        -webkit-transform: translateY(10px);
         transform: translateY(10px);
     }
-
     to {
         opacity: 1;
+        -webkit-transform: translateY(0);
         transform: translateY(0);
+    }
+}
+
+@-webkit-keyframes slideInLeft {
+    from {
+        -webkit-transform: translateX(-20px);
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+        opacity: 1;
     }
 }
 
 @keyframes slideInLeft {
     from {
+        -webkit-transform: translateX(-20px);
         transform: translateX(-20px);
         opacity: 0;
     }
-
     to {
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes slideInRight {
+    from {
+        -webkit-transform: translateX(100%);
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        -webkit-transform: translateX(0);
         transform: translateX(0);
         opacity: 1;
     }
@@ -71,11 +112,12 @@
 
 @keyframes slideInRight {
     from {
+        -webkit-transform: translateX(100%);
         transform: translateX(100%);
         opacity: 0;
     }
-
     to {
+        -webkit-transform: translateX(0);
         transform: translateX(0);
         opacity: 1;
     }
@@ -96,7 +138,6 @@ body {
     color: var(--text-main);
     line-height: 1.6;
     overflow-x: hidden;
-    animation: fadeIn 0.6s ease-out;
 }
 
 h1,
@@ -114,6 +155,8 @@ h5 {
 .app-container {
     display: flex;
     min-height: 100vh;
+    -webkit-animation: fadeIn 0.6s ease-out;
+    animation: fadeIn 0.6s ease-out;
 }
 
 /* ===========================
@@ -439,6 +482,7 @@ h5 {
     margin-top: 2rem;
     border-left: 5px solid var(--success-color);
     background: linear-gradient(90deg, rgba(39, 174, 96, 0.05) 0%, var(--card-bg) 100%);
+    -webkit-animation: fadeIn 0.4s ease-out;
     animation: fadeIn 0.4s ease-out;
 }
 
@@ -567,6 +611,7 @@ h5 {
     border-radius: var(--radius-md);
     padding: 1.25rem;
     margin-bottom: 1.5rem;
+    -webkit-animation: fadeIn 0.3s ease-out;
     animation: fadeIn 0.3s ease-out;
 }
 
@@ -840,6 +885,7 @@ tr:hover {
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     z-index: 1000;
+    -webkit-animation: slideInRight 0.3s ease-out;
     animation: slideInRight 0.3s ease-out;
     display: flex;
     align-items: center;
@@ -990,6 +1036,7 @@ tr:hover {
         margin-bottom: 0.85rem;
         border-left: 4px solid var(--primary-color);
         overflow: hidden;
+        -webkit-animation: fadeIn 0.3s ease-out;
         animation: fadeIn 0.3s ease-out;
     }
 
@@ -1204,6 +1251,7 @@ tr:hover {
     border: 4px solid rgba(26, 79, 139, 0.2);
     border-top-color: var(--primary-color);
     border-radius: 50%;
+    -webkit-animation: spin 1s linear infinite;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
 }
@@ -1214,7 +1262,21 @@ tr:hover {
     color: var(--primary-dark);
 }
 
+@-webkit-keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+
 @keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
     to {
         transform: rotate(360deg);
     }

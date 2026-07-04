@@ -251,13 +251,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Activar carga en enlaces regulares
-    document.querySelectorAll('a:not([target="_blank"]):not([href^="#"]):not([href^="javascript:"])').forEach(link => {
+    // Permitir descartar la capa de carga si se hace click en ella (evita bloqueo si se queda atascada)
+    if (globalLoadingOverlay) {
+        globalLoadingOverlay.addEventListener('click', hideLoading);
+    }
+
+    // Activar carga en enlaces regulares (excluyendo descargas, correos, teléfonos, etc.)
+    document.querySelectorAll('a:not([target="_blank"]):not([href^="#"]):not([href^="javascript:"]):not([href^="mailto:"]):not([href^="tel:"]):not([download])').forEach(link => {
         link.addEventListener('click', (e) => {
             // No activar si se presiona ctrl/cmd (abrir en nueva pestaña)
             if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
-            // No activar si tiene la clase 'no-loader' o similar (opcional)
+            // No activar si tiene la clase 'no-loader' o similar
             if (link.classList.contains('no-loader')) return;
+            
+            // Excluir archivos comunes que se descargan o abren directamente sin descargar una página nueva
+            const href = link.getAttribute('href') || '';
+            if (href.match(/\.(pdf|xlsx|xls|doc|docx|zip|rar|csv)$/i)) return;
             
             showLoading();
         });

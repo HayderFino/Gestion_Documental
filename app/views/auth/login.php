@@ -25,6 +25,8 @@
             border-radius: var(--radius-lg);
             text-align: center;
             box-shadow: var(--shadow-lg);
+            -webkit-animation: fadeIn 0.6s ease-out;
+            animation: fadeIn 0.6s ease-out;
         }
         .login-card h2 { margin-bottom: 2rem; color: var(--primary-dark); }
         .form-group { margin-bottom: 1.5rem; text-align: left; }
