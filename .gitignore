@@ -1,3 +1,5 @@
 .agents/workflows/
 .agents/rules/
 .geenral
+.env
+.env.local
